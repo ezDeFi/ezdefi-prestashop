@@ -1,0 +1,11 @@
+{
+    "name": "ezdefi/prestashop",
+    "authors": [
+        {
+            "name": "ezDeFi",
+            "email": "support@ezdefi.com"
+        }
+    ],
+    "require": {},
+    "type": "prestashop-module"
+}
