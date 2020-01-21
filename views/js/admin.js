@@ -34,7 +34,7 @@ jQuery(function($) {
     this.customValidationRule();
     this.initSort.call(this);
     this.initValidation.call(this);
-    this.toggleAmountSetting.call(this);
+    this.toggleVariationSetting.call(this);
 
     this.$table.find("select").each(function() {
       self.initCurrencySelect.call(self, $(this));
