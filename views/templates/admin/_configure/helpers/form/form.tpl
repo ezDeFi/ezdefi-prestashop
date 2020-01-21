@@ -18,7 +18,7 @@
         <th scope="col" class="logo"></th>
         <th scope="col" class="name"><strong>Name</strong></th>
         <th scope="col" class="discount"><strong>Discount</strong></th>
-        <th scope="col" class="lifetime"><strong>Expiration (seconds)</strong></th>
+        <th scope="col" class="lifetime"><strong>Expiration (minuties)</strong></th>
         <th scope="col" class="wallet"><strong>Wallet Address</strong></th>
         <th scope="col" class="block-confirm"><strong>Block Confirmation</strong></th>
         <th scope="col" class="decimal"><strong>Decimal</strong></th>
@@ -66,11 +66,11 @@
           <td class="lifetime">
             <div class="view">
               {if not empty($currency['lifetime'])}
-                {$currency['lifetime']}s
+                {$currency['lifetime']}m
               {/if}
             </div>
             <div class="edit">
-              <input type="number" name="EZDEFI_CURRENCY[{$index}][lifetime]" value="{$currency['lifetime']}"><span> s</span>
+              <input type="number" name="EZDEFI_CURRENCY[{$index}][lifetime]" value="{$currency['lifetime']}"><span> m</span>
             </div>
           </td>
           <td class="wallet">

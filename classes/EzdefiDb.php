@@ -150,7 +150,7 @@ class EzdefiDb
 	{
 		$decimal = $currencyData['decimal'];
 		$symbol = $currencyData['symbol'];
-		$life_time = $currencyData['lifetime'];
+		$life_time = (int) $currencyData['lifetime'] * 60;
 
 		$price = round($price, $decimal);
 

@@ -183,7 +183,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 			'to' => $currencyData['wallet_address'],
 			'value' => $value,
 			'safedist' => (isset($currencyData['block_confirm'] ) ) ? $currencyData['block_confirm'] : 1,
-			'duration' => (isset($currencyData['lifetime'] ) ) ? $currencyData['lifetime'] : 900,
+			'duration' => (isset($currencyData['lifetime'] ) ) ? ((int) $currencyData['lifetime'] * 60) : 900,
 			'callback' => $callback,
 		];
 
