@@ -101,6 +101,8 @@ class Ezdefi extends PaymentModule
 	    $this->db->addProcedure();
 
 	    $this->db->addEvents();
+
+		return true;
     }
 
     public function installTab()
@@ -156,6 +158,8 @@ class Ezdefi extends PaymentModule
 	    $this->db->dropAmountIdsTable();
 
 	    $this->db->dropExceptionsTable();
+
+	    return true;
     }
 
     public function uninstallTab()
@@ -482,21 +486,33 @@ class Ezdefi extends PaymentModule
 				'symbol' => 'newsd',
 				'name' => 'NewSD',
 				'desc' => 'NewSD',
-				'decimal' => 4
+				'decimal' => 4,
+			    'discount' => 0,
+			    'lifetime' => 15,
+			    'block_confirm' => 1,
+			    'wallet_address' => ''
 		    ],
 		    [
 			    'logo' => $this->_path . 'views/images/bitcoin-icon.png',
 				'symbol' => 'btc',
 				'name' => 'Bitcoin',
 				'desc' => 'Bitcoin',
-				'decimal' => 8
+				'decimal' => 8,
+			    'discount' => 0,
+			    'lifetime' => 15,
+			    'block_confirm' => 1,
+			    'wallet_address' => ''
 		    ],
 		    [
 		        'logo' => $this->_path . 'views/images/ethereum-icon.png',
 				'symbol' => 'eth',
 				'name' => 'Ethereum',
 				'desc' => 'Ethereum',
-				'decimal' => 8
+				'decimal' => 8,
+			    'discount' => 0,
+			    'lifetime' => 15,
+			    'block_confirm' => 1,
+			    'wallet_address' => ''
 		    ]
 	    ];
     }
