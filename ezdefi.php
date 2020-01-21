@@ -75,7 +75,7 @@ class Ezdefi extends PaymentModule
 
     public function install()
     {
-		if(parent::install() && $this->installDb() && $this->installTab() && $this->installOrderState()) {
+		if(parent::install() && $this->installDb() && $this->installTab() && $this->installOrderState() && $this->registerHook('paymentOptions')) {
 			$this->active = true;
 			return true;
 		}
