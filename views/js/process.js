@@ -49,9 +49,11 @@ jQuery(function($) {
     var id = tabNavLi.find("a").attr("href");
     this.$tabs.find(selectors.panel).each(function() {
       $(this).hide();
+      $(this).removeClass("active");
     });
     var activePanel = this.$tabs.find(id);
     activePanel.show();
+    activePanel.addClass("active");
     this.createEzdefiPayment.call(this, activePanel);
 
     var clipboard = new ClipboardJS(selectors.copy);
@@ -89,12 +91,14 @@ jQuery(function($) {
         });
         self.$loader.show();
         self.$tabs.hide();
+        self.$currencySelect.hide();
       },
       success: function(response) {
         panel.html($(response.data));
         self.setTimeRemaining.call(self, panel);
         self.$loader.hide();
         self.$tabs.show();
+        self.$currencySelect.show();
         self.checkOrderStatus.call(self);
       }
     });
@@ -117,7 +121,7 @@ jQuery(function($) {
     if (!symbol) {
       return false;
     }
-    var active = self.$tabs.find(selectors.panel + ":visible");
+    var active = self.$tabs.find(selectors.panel + ".active");
     var method = active.attr("id");
     $.ajax({
       url: self.processData.ajaxUrl,
@@ -160,12 +164,14 @@ jQuery(function($) {
     });
     this.$tabs.find("> div").each(function() {
       $(this).hide();
+      $(this).removeClass("active");
     });
     var target = $(e.target).is("li") ? $(e.target) : $(e.target).closest("li");
     target.addClass("active");
     var id = target.find("a").attr("href"),
       activePanel = this.$tabs.find(id);
     activePanel.show();
+    activePanel.addClass("active");
     if (activePanel.is(":empty")) {
       this.createEzdefiPayment.call(this, activePanel);
     }
@@ -185,8 +191,10 @@ jQuery(function($) {
     this.$tabs.find(selectors.panel).each(function() {
       if ($(this).is("#ezdefi_wallet")) {
         $(this).show();
+        $(this).addClass("active");
       } else {
         $(this).hide();
+        $(this).removeClass("active");
       }
     });
   };
