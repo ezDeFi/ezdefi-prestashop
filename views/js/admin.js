@@ -216,19 +216,13 @@ jQuery(function($) {
         $input.rules("add", {
           required: true,
           min: 2,
+          max: decimal_max,
           messages: {
             min: jQuery.validator.format("Min: {0}"),
+            max: jQuery.validator.format("Max: {0}"),
             required: "Required"
           }
         });
-        if (decimal_max && decimal_max > 0) {
-          $input.rules("add", {
-            max: decimal_max,
-            messages: {
-              max: jQuery.validator.format("Max: {0}")
-            }
-          });
-        }
       }
     });
   };
