@@ -45,7 +45,18 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 	public function ajaxProcessGetTokens()
     {
-	    $tokens = $this->api->getTokens(Tools::getValue('keyword', ''));
+	    $apiUrl = Tools::getValue('api_url', '');
+	    $apiKey = Tools::getValue('api_key', '');
+
+	    if(empty($apiUrl) || empty($apiKey)) {
+		    $this->ajaxDie([], null, null, 400);
+	    }
+
+	    $api = new EzdefiApi();
+	    $api->setApiUrl($apiUrl);
+	    $api->setApiKey($apiKey);
+
+	    $tokens = $api->getTokens(Tools::getValue('keyword', ''));
 
 	    if(is_null($tokens)) {
 		    $this->ajaxDie([], null, null, 400);
