@@ -95,6 +95,7 @@
             </div>
             <div class="edit">
               <input type="number" class="currency-decimal" name="EZDEFI_CURRENCY[{$index}][decimal]" value="{$currency['decimal']}">
+              <input type="number" class="currency-decimal-max" name="EZDEFI_CURRENCY[{$index}][decimal_max]" value="{$currency['decimal_max']}">
             </div>
           </td>
         </tr>

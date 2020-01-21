@@ -490,7 +490,8 @@ class Ezdefi extends PaymentModule
 			    'discount' => 0,
 			    'lifetime' => 15,
 			    'block_confirm' => 1,
-			    'wallet_address' => ''
+			    'wallet_address' => '',
+			    'decimal_max' => 6
 		    ],
 		    [
 			    'logo' => $this->_path . 'views/images/bitcoin-icon.png',
@@ -501,7 +502,8 @@ class Ezdefi extends PaymentModule
 			    'discount' => 0,
 			    'lifetime' => 15,
 			    'block_confirm' => 1,
-			    'wallet_address' => ''
+			    'wallet_address' => '',
+			    'decimal_max' => 8
 		    ],
 		    [
 		        'logo' => $this->_path . 'views/images/ethereum-icon.png',
@@ -512,7 +514,8 @@ class Ezdefi extends PaymentModule
 			    'discount' => 0,
 			    'lifetime' => 15,
 			    'block_confirm' => 1,
-			    'wallet_address' => ''
+			    'wallet_address' => '',
+			    'decimal_max' => 18
 		    ]
 	    ];
     }
