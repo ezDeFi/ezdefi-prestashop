@@ -131,7 +131,9 @@ class EzdefiHelper
 
 		$value = $value * $rate;
 
-		$value = $this->db->generateUniqueAmountId($value, $currencyData);
+		$acceptable_variation = $this->config->getConfig('EZDEFI_ACCEPTABLE_VARIATION');
+
+		$value = $this->db->generateUniqueAmountId($value, $currencyData, $acceptable_variation);
 
 		return $value;
 	}

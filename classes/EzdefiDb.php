@@ -146,7 +146,7 @@ class EzdefiDb
 	 *
 	 * @return float|null
 	 */
-	public function generateUniqueAmountId($price, $currencyData)
+	public function generateUniqueAmountId($price, $currencyData, $acceptable_variation)
 	{
 		$decimal = $currencyData['decimal'];
 		$symbol = $currencyData['symbol'];
@@ -166,8 +166,6 @@ class EzdefiDb
 		}
 
 		$amount_id = floatval($result);
-
-		$acceptable_variation = $this->getConfig('EZDEFI_ACCEPTABLE_VARIATION');
 
 		$variation_percent = $acceptable_variation / 100;
 
