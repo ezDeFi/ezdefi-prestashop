@@ -28,10 +28,13 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 		    $this->ajaxDie('false');
 	    }
 
-    	$this->api->setApiUrl($apiUrl);
-    	$this->api->setApiKey($apiKey);
+    	$api = new EzdefiApi();
+    	$api->setApiUrl($apiUrl);
+    	$api->setApiKey($apiKey);
 
-	    $result = $this->api->checkApiKey();
+	    $result = $api->checkApiKey();
+
+	    $this->ajaxDie($result);
 
 	    if(is_null($result)) {
 		    $this->ajaxDie('false');
