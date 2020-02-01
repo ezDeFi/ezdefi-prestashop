@@ -154,7 +154,7 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 		$authorized = false;
 
 		foreach (Module::getPaymentModules() as $module) {
-			if ($module['name'] == 'ps_checkpayment') {
+			if ($module['name'] == 'ezdefi') {
 				$authorized = true;
 				break;
 			}
