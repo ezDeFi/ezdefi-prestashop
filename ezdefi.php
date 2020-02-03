@@ -335,7 +335,8 @@ class Ezdefi extends PaymentModule
                         'type' => 'text',
                         'label' => $this->l('Gateway API Key'),
                         'name' => 'EZDEFI_API_KEY',
-                        'required' => true
+                        'required' => true,
+                        'desc' => '<a href="https://merchant.ezdefi.com/register?utm_source=prestashop-download">' . $this->l('Register to get API Key') . '</a>'
                     ),
                     array(
                         'type' => 'switch',
