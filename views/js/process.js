@@ -267,7 +267,7 @@ jQuery(function($) {
   };
 
   Process.prototype.success = function() {
-    // location.replace(this.processData.orderConfirmUrl);
+    location.replace(this.processData.orderConfirmUrl);
   };
 
   Process.prototype.timeout = function(panel) {
