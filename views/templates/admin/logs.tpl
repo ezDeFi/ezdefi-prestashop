@@ -1,6 +1,5 @@
 <div class="panel col-lg-12">
   <div id="">
-    <div class="panel-heading">Transactions Log</div>
     <form action="" id="ezdefi-transaction-filter">
       <div class="filter-container">
         <div class="filter-rows">
