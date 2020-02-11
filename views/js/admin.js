@@ -118,7 +118,7 @@ jQuery(function($) {
               return self.$form.find('input[name="EZDEFI_AMOUNT_ID"]:checked').val() == 1;
             }
           },
-          digits: true,
+          number: true,
           greaterThanZero: true,
           max: 100
         },
