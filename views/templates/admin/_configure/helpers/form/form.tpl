@@ -8,6 +8,25 @@
   {/if}
 {/block}
 
+{block name="input"}
+  {if $input.type == 'ezdefi_method_checkbox'}
+    <div class="ezdefi-method">
+      <fieldset>
+        <label for="EZDEFI_AMOUNT_ID">
+        <input type="checkbox" {if $fields_value['EZDEFI_AMOUNT_ID'] == '1'}checked="checked"{/if}" name="EZDEFI_AMOUNT_ID" id="EZDEFI_AMOUNT_ID" value="1"> Pay with any crypto wallet</label>
+        <p class="help-block">This method will adjust payment amount of each order by an acceptable number to help payment gateway identifying the uniqueness of that order.</p>
+      </fieldset>
+      <fieldset>
+        <label for="EZDEFI_EZDEFI_WALLET">
+        <input type="checkbox" {if $fields_value['EZDEFI_EZDEFI_WALLET'] == '1'}checked="checked"{/if}" name="EZDEFI_EZDEFI_WALLET" id="EZDEFI_EZDEFI_WALLET" value="1"> Pay with ezDeFi wallet</label>
+        <p class="help-block">This method is more powerful when amount uniqueness of above method reaches allowable limit. Users need to install ezDeFi wallet then import their private key to pay using QR Code.</p>
+      </fieldset>
+    </div>
+  {else}
+    {$smarty.block.parent}
+  {/if}
+{/block}
+
 {block name="input_row"}
   {if $input.type == 'currency_table'}
     {assign var='ezdefiCurrency' value=$fields_value[$input.name]}

@@ -88,8 +88,8 @@ jQuery(function($) {
       errorElement: "span",
       errorClass: "error",
       errorPlacement: function(error, element) {
-        if (element.parent(".switch").length) {
-          error.insertAfter(element.closest(".switch"));
+        if (element.closest(".ezdefi-method").length) {
+          error.insertAfter(element.closest(".ezdefi-method"));
         } else {
           if (element.closest("#ezdefi-currency-table").length == 1) {
             if (element.hasClass("select-select2")) {
@@ -125,14 +125,14 @@ jQuery(function($) {
         EZDEFI_AMOUNT_ID: {
           enabledMethod: {
             depends: function(element) {
-              return !self.$form.find("#EZDEFI_EZDEFI_WALLET_on").is(":checked");
+              return !self.$form.find("#EZDEFI_EZDEFI_WALLET").is(":checked");
             }
           }
         },
         EZDEFI_EZDEFI_WALLET: {
           enabledMethod: {
             depends: function(element) {
-              return !self.$form.find("#EZDEFI_AMOUNT_ID_on").is(":checked");
+              return !self.$form.find("#EZDEFI_AMOUNT_ID").is(":checked");
             }
           }
         }

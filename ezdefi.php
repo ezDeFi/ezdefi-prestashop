@@ -340,38 +340,15 @@ class Ezdefi extends PaymentModule
                         'desc' => '<a target="_blank" href="https://merchant.ezdefi.com/register?utm_source=prestashop-download">' . $this->l('Register to get API Key') . '</a>'
                     ),
                     array(
-                        'type' => 'switch',
-                        'label' => $this->l('Pay with any crypto wallet'),
-                        'name' => 'EZDEFI_AMOUNT_ID',
-                        'desc' => 'This method will adjust payment amount of each order by an acceptable number to help payment gateway identifying the uniqueness of that order.',
-                        'values' => array(
-                            array(
-                                'value' => 1,
-                            ),
-                            array(
-                                'value' => 0,
-                            )
-                        )
+                        'type' => 'ezdefi_method_checkbox',
+                        'label' => $this->l('Payment methods'),
+                        'required' => true
                     ),
                     array(
                         'type' => 'text',
                         'label' => $this->l('Acceptable price variation'),
                         'name' => 'EZDEFI_ACCEPTABLE_VARIATION'
                     ),
-                    array(
-                        'type' => 'switch',
-                        'label' => $this->l(' Pay with ezDeFi wallet'),
-                        'name' => 'EZDEFI_EZDEFI_WALLET',
-                        'desc' => 'This method is more powerful when amount uniqueness above method reaches allowable limit. Users just need to install ezDeFi wallet then import their private key to pay using qrCode.',
-                        'values' => array(
-                            array(
-                                'value' => 1,
-                            ),
-                            array(
-                                'value' => 0,
-                            )
-                        )
-                    )
                 )
             )
         );

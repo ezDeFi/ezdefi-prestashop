@@ -23,6 +23,23 @@ form.ezdefi {
     }
   }
 
+  .ezdefi-method {
+    fieldset {
+      label {
+        color: #666;
+        font-size: 13px;
+        font-weight: 400;
+        margin-bottom: 0;
+
+        input {
+          float: left;
+          margin-top: 4px;
+          margin-right: 3px;
+        }
+      }
+    }
+  }
+
   #ezdefi-currency-table {
     overflow-x: auto;
     thead {

@@ -16,6 +16,17 @@ form.ezdefi input[name=EZDEFI_API_KEY].pending {
   background-size: 20px 20px;
   background-position: 99% center;
 }
+form.ezdefi .ezdefi-method fieldset label {
+  color: #666;
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+form.ezdefi .ezdefi-method fieldset label input {
+  float: left;
+  margin-top: 4px;
+  margin-right: 3px;
+}
 form.ezdefi #ezdefi-currency-table {
   overflow-x: auto;
 }
