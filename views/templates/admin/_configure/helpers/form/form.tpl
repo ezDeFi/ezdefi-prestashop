@@ -66,7 +66,7 @@
               </div>
             </div>
             <div class="edit">
-              <select name="" class="select-select2">
+              <select name="EZDEFI_CURRENCY[{$index}][select]" class="select-select2">
                 <option value="{$currency['symbol']}" selected="selected">{$currency['name']}</option>
               </select>
               <div class="actions">

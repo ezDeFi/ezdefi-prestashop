@@ -164,11 +164,7 @@ jQuery(function($) {
       if (name.indexOf("select") > 0) {
         var $select = $('select[name="' + name + '"]');
         $select.rules("add", {
-          required: {
-            depends: function(element) {
-              return self.$form.find(".ezdefi_api_url input").val() !== "";
-            }
-          },
+          required: true,
           messages: {
             required: "Please select currency"
           }
