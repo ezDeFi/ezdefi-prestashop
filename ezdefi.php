@@ -329,7 +329,8 @@ class Ezdefi extends PaymentModule
                         'type' => 'text',
                         'label' => $this->l('Gateway API Url'),
                         'name' => 'EZDEFI_API_URL',
-                        'required' => true
+                        'required' => true,
+                        'placeholder' => 'https://merchant-api.ezdefi.com/api'
                     ),
                     array(
                         'type' => 'text',
