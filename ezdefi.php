@@ -347,7 +347,9 @@ class Ezdefi extends PaymentModule
                     array(
                         'type' => 'text',
                         'label' => $this->l('Acceptable price variation'),
-                        'name' => 'EZDEFI_ACCEPTABLE_VARIATION'
+                        'name' => 'EZDEFI_ACCEPTABLE_VARIATION',
+                        'placeholder' => '0.01',
+                        'desc' => 'Allowable amount variation (%)'
                     ),
                 )
             )
