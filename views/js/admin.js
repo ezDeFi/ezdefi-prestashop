@@ -115,7 +115,7 @@ jQuery(function($) {
         EZDEFI_ACCEPTABLE_VARIATION: {
           required: {
             depends: function(element) {
-              return self.$form.find('input[name="EZDEFI_AMOUNT_ID"]:checked').val() === 1;
+              return self.$form.find('input[name="EZDEFI_AMOUNT_ID"]:checked').val() == 1;
             }
           },
           digits: true,
