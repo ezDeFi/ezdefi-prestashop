@@ -10,7 +10,7 @@
           </h3>
           <div id="ezdefi-currency-select">
             {foreach $acceptedCurrencies as $c}
-              {assign var="discount" value=($c['discount']|intval)}
+              {assign var="discount" value=$c['discount']}
               {assign var="index" value=array_search($c['symbol'], array_column($exchanges, 'token'))}
               {assign var="amount" value=$exchanges[$index]['amount']}
               {assign var="discounted" value=$amount-($amount*($discount/100))}
