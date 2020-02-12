@@ -180,23 +180,33 @@ jQuery(function($) {
   Process.prototype.onClickEzdefiLink = function(e) {
     var self = this;
     e.preventDefault();
-    this.$tabs.find(selectors.tabsNavLi).each(function() {
-      var a = $(this).find("a");
-      if (a.attr("href") === "#ezdefi_wallet") {
-        $(this).addClass("active");
-      } else {
-        $(this).removeClass("active");
-      }
-    });
-    this.$tabs.find(selectors.panel).each(function() {
-      if ($(this).is("#ezdefi_wallet")) {
-        $(this).show();
-        $(this).addClass("active");
-      } else {
-        $(this).hide();
-        $(this).removeClass("active");
-      }
-    });
+    this.$tabs.find('li').removeClass('active');
+    this.$tabs.find(selectors.panel).removeClass('active');
+    this.$tabs.find('a#tab-ezdefi_wallet').closest('li').trigger('click');
+    // this.$tabs.find(selectors.tabsNavLi).each(function() {
+    //   var a = $(this).find("a");
+    //   if (a.attr("href") === "#ezdefi_wallet") {
+    //     $(this).click();
+    //   }
+    // });
+    // this.$tabs.find(selectors.tabsNavLi).each(function() {
+    //   var a = $(this).find("a");
+    //   if (a.attr("href") === "#ezdefi_wallet") {
+    //     $(this).click();
+    //     $(this).addClass("active");
+    //   } else {
+    //     $(this).removeClass("active");
+    //   }
+    // });
+    // this.$tabs.find(selectors.panel).each(function() {
+    //   if ($(this).is("#ezdefi_wallet")) {
+    //     $(this).show();
+    //     $(this).addClass("active");
+    //   } else {
+    //     $(this).hide();
+    //     $(this).removeClass("active");
+    //   }
+    // });
   };
 
   Process.prototype.onUseAltQrcode = function(e) {
