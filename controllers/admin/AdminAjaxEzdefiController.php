@@ -135,7 +135,7 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 	{
 		$keyword = (Tools::getValue('keyword')) ? Tools::getValue('keyword') : '';
 
-		$orders = $this->helper->getDb()->getOrders($keyword);
+		$orders = $this->db->getOrders($keyword);
 
 		return $this->ajaxDie($orders);
 	}
@@ -148,7 +148,7 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 		$currency = Tools::getValue('currency');
 
-		$this->helper->getDb()->deleteAmountIdException($amount_id, $currency, $order_id);
+		$this->db->deleteAmountIdException($amount_id, $currency, $order_id);
 
 		return $this->ajaxDie();
 	}
@@ -186,7 +186,7 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 			'payment_method' => null
 		);
 
-		$this->helper->getDb()->updateException( $wheres, $data );
+		$this->db->updateException( $wheres, $data );
 
 		return $this->ajaxDie();
 	}
