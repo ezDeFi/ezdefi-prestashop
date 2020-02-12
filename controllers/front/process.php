@@ -37,6 +37,15 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 			return $this->redirectToFirstStep();
 		}
 
+        $selectedCurrency = Tools::getValue('ezdefi_currency');
+
+        if(empty($selectedCurrency)) {
+            array_push($this->errors, $this->module->l('Please select cryptocurrency'), false);
+            return $this->redirectWithNotifications(
+                $this->context->link->getPageLink('order', null, null, array('step' => '3'))
+            );
+        }
+
 		if(!$this->validateOrder()) {
 			return $this->redirectToFirstStep();
 		}
@@ -73,8 +82,6 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 		);
 
 		$modulePath = _MODULE_DIR_ . 'ezdefi';
-
-		$selectedCurrency = Tools::getValue('ezdefi_currency');
 
 		$this->context->smarty->assign(array(
 			'acceptedCurrencies' => $acceptedCurrencies,
