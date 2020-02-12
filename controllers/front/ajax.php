@@ -69,21 +69,21 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	protected function createPayment($uoid, $symbol, $method)
 	{
 		if(empty($uoid) || empty($symbol) || empty($method)) {
-			return false;
+			return "Can't create payment. Please contact with shop owner";
 		}
 
 		if(is_null($order = $this->helper->getOrderById($uoid))) {
-			return false;
+			return "Can't create payment. Please contact with shop owner";
 		}
 
 		$currencyData = $this->config->getCurrencyOptionData($symbol);
 
 		if(is_null($currencyData)) {
-			return false;
+			return "Can't create payment. Please contact with shop owner";
 		}
 
 		if(!in_array($method, $this->config->getPaymentMethods())) {
-			return false;
+			return "Can't create payment. Please contact with shop owner";
 		}
 
 		$amountId = ($method === 'amount_id') ? true : false;
@@ -95,13 +95,13 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 		);
 
 		if(is_null($paymentData)) {
-			return false;
+			return "Can't create payment. Please contact with shop owner";
 		}
 
 		$payment = $this->api->createPayment($paymentData);
 
 		if(is_null($payment)) {
-			return false;
+			return "Can't create payment. Please contact with shop owner";
 		}
 
 		if($amountId) {
