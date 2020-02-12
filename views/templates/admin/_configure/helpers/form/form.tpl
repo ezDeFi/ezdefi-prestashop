@@ -45,7 +45,7 @@
       </thead>
       <tbody>
       {foreach $ezdefiCurrency as $index => $currency}
-        <tr>
+        <tr data-saved="1">
           <td class="sortable-handle">
             <span><i class="icon icon-bars" aria-hidden="true"></i></span>
           </td>

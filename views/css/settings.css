@@ -111,6 +111,9 @@ form.ezdefi #ezdefi-currency-table tbody tr td.name .edit .select2-container .se
 form.ezdefi #ezdefi-currency-table tbody tr td.wallet .edit input {
   width: 100%;
 }
+form.ezdefi #ezdefi-currency-table tbody tr td.decimal .error.decimal-warning {
+  display: block;
+}
 form.ezdefi #ezdefi-currency-table tbody tr td .actions {
   padding: 2px 0 0;
   position: static;

@@ -17,8 +17,8 @@ jQuery(function($) {
       .on("click", ".cancelBtn", onToggleEdit)
       .on("click", ".addBtn", addCurrency)
       .on("click", ".deleteBtn", removeCurrency)
-      .on("focus", ".currency-input", onChangeDecimal)
-      .on("blur", ".currency-input", onBlurDecimal)
+      .on("focus", ".currency-decimal", onChangeDecimal)
+      .on("blur", ".currency-decimal", onBlurDecimal)
       .on("change", "input[name='EZDEFI_AMOUNT_ID']", toggleVariationSetting)
       .on("change", "input[name='EZDEFI_API_KEY']", onChangeApiKey);
 

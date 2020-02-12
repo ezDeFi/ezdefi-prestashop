@@ -161,6 +161,12 @@ form.ezdefi {
             }
           }
 
+          &.decimal {
+            .error.decimal-warning {
+              display: block;
+            }
+          }
+
           .actions {
             padding: 2px 0 0;
             position: static;
