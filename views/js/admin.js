@@ -187,7 +187,10 @@ jQuery(function($) {
       if (name.indexOf("lifetime") > 0) {
         var $input = $('input[name="' + name + '"]');
         $input.rules("add", {
-          min: 0
+          min: 0,
+          messages: {
+            min: jQuery.validator.format("Min: {0}")
+          }
         });
       }
 

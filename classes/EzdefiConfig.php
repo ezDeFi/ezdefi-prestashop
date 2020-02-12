@@ -24,9 +24,17 @@ class EzdefiConfig
 	 */
 	public function updateConfig($key, $value)
 	{
-		$value = ($key === 'EZDEFI_CURRENCY') ? serialize($value) : $value;
+	    if($key != 'EZDEFI_CURRENCY') {
+            return Configuration::updateValue($key, $value);
+        }
 
-		return Configuration::updateValue($key, $value);
+	    foreach($value as $i => $v) {
+	        if(empty($v['lifetime'])) {
+	            $value[$i]['lifetime'] = 15;
+            }
+        }
+
+		return Configuration::updateValue($key, serialize($value));
 	}
 
 	/**
