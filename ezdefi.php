@@ -201,7 +201,7 @@ class Ezdefi extends PaymentModule
         $option = new PaymentOption();
         $option->setModuleName($this->name)
                ->setInputs([['type' => 'hidden', 'name' => 'ezdefi_currency', 'value' => '']])
-               ->setCallToActionText('Pay with cryptocurrency')
+               ->setCallToActionText('Pay with Cryptocurrencies')
                ->setAction($this->context->link->getModuleLink($this->name, 'process', array(), true))
                ->setAdditionalInformation($this->fetch('module:ezdefi/views/templates/front/ezdefi_checkout.tpl'));
 
