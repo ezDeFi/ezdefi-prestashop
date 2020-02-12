@@ -341,6 +341,7 @@ class Ezdefi extends PaymentModule
                     ),
                     array(
                         'type' => 'ezdefi_method_checkbox',
+                        'name' => 'EZDEFI_PAYMENT_METHOD',
                         'label' => $this->l('Payment methods'),
                         'required' => true
                     ),
