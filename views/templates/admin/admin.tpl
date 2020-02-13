@@ -1,11 +1,11 @@
 {addJsDef ezdefiAdminUrl=$ezdefiAdminUrl}
 
 <ul class="nav nav-tabs" role="tablist">
-  <li">
-    <a href="#ezdefi-settings" role="tab" >{l s="Settings" m="ezdefi"}</a>
+  <li>
+    <a href="#ezdefi-settings" role="tab" data-toggle="tab">{l s="Settings" m="ezdefi"}</a>
   </li>
-  <li">
-    <a href="#ezdefi-logs" role="tab" >{l s="Transaction Logs" m="ezdefi"}</a>
+  <li>
+    <a href="#ezdefi-logs" role="tab" data-toggle="tab">{l s="Transaction Logs" m="ezdefi"}</a>
   </li>
 </ul>
 
