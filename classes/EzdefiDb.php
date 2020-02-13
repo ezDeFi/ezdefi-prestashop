@@ -2,7 +2,14 @@
 
 class EzdefiDb
 {
-	/**
+    protected $config;
+
+    public function __construct()
+    {
+        $this->config = new EzdefiConfig();
+    }
+
+    /**
 	 * Create ezdefi_amount_ids table
 	 *
 	 * @return bool
@@ -333,7 +340,7 @@ class EzdefiDb
 	 */
 	public function getOrders($keyword = '')
 	{
-		$orderStateId = (int) $this->getConfig('EZDEFI_OS_WAITING');
+		$orderStateId = (int) $this->config->getConfig('EZDEFI_OS_WAITING');
 
 		$sql = 'SELECT o.id_order as id, o.current_state as current_state, o.total_paid_tax_incl as total, o.date_add as date, customer.email as email, currency.iso_code as currency
 	                FROM ' . _DB_PREFIX_ . 'orders o
