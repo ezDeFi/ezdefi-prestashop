@@ -11,7 +11,6 @@ jQuery(function($) {
     var onChangeDecimal = this.onChangeDecimal.bind(this);
     var onBlurDecimal = this.onBlurDecimal.bind(this);
     var onChangeApiKey = this.onChangeApiKey.bind(this);
-    var onClickNavTabLink = this.onClickNavTabLink.bind(this);
 
     $(document.body)
       .on("click", ".editBtn", onToggleEdit)
@@ -22,13 +21,17 @@ jQuery(function($) {
       .on("blur", ".currency-decimal", onBlurDecimal)
       .on("change", "input[name='EZDEFI_AMOUNT_ID']", toggleVariationSetting)
       .on("change", "input[name='EZDEFI_API_KEY']", onChangeApiKey)
-      .on("click", ".nav-tabs a", onClickNavTabLink);
+      .on("click", ".nav-tabs a", this.onClickNavTabLink);
 
     init();
   };
 
   Admin.prototype.init = function() {
     var self = this;
+
+    var hash = window.location.hash;
+    hash = (hash.length === 0) ? '#ezdefi-settings' : hash;
+    $('ul.nav a[href="' + hash + '"]').tab('show');
 
     this.$form.find("input[name='EZDEFI_API_KEY']").attr("autocomplete", "off");
 
@@ -45,7 +48,8 @@ jQuery(function($) {
 
   Admin.prototype.onClickNavTabLink = function(e) {
     e.preventDefault();
-    window.location.href = window.location.href + '&tab_module=' + $(e.target).attr('href').replace('#', '');
+    $(this).tab('show');
+    history.pushState({}, '', this.hash);
   };
 
   Admin.prototype.customValidationRule = function() {
