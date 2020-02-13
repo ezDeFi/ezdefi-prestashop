@@ -327,7 +327,7 @@ jQuery(function($) {
         last_td = $(
           "<td>" +
             "<button class='btn btn-primary reverseBtn'>Reverse</button> " +
-            "<button class='btn btn-secondary removeBtn'>Remove</button>" +
+            "<button class='btn btn-danger removeBtn'>Remove</button>" +
             "</td>"
         );
       } else {
