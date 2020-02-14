@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12">
           <h3 class="h1 card-title">
-            Pay with cryptocurrency
+            Pay with cryptocurrencies
           </h3>
           <div id="ezdefi-currency-select">
             {foreach $acceptedCurrencies as $c}
