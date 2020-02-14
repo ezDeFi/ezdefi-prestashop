@@ -69,21 +69,21 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	protected function createPayment($uoid, $symbol, $method)
 	{
 		if(empty($uoid) || empty($symbol) || empty($method)) {
-			return "Can't create payment. Please contact with shop owner";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		if(is_null($order = $this->helper->getOrderById($uoid))) {
-			return "Can't create payment. Please contact with shop owner";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		$currencyData = $this->config->getCurrencyOptionData($symbol);
 
 		if(is_null($currencyData)) {
-			return "Can't create payment. Please contact with shop owner";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		if(!in_array($method, $this->config->getPaymentMethods())) {
-			return "Can't create payment. Please contact with shop owner";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		$amountId = ($method === 'amount_id') ? true : false;
@@ -95,13 +95,13 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 		);
 
 		if(is_null($paymentData)) {
-			return "Can't create payment. Please contact with shop owner";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		$payment = $this->api->createPayment($paymentData);
 
 		if(is_null($payment)) {
-			return "Can't create payment. Please contact with shop owner";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		if($amountId) {
@@ -160,6 +160,8 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	protected function preparePaymentData($order, $currencyData, $amountId = false)
 	{
 		$callback = $this->context->link->getModuleLink($this->module->name, 'callback', array(), true);
+//        $callback = 'https://ef81c8e4.ngrok.io/index.php?fc=module&module=ezdefi&controller=callback';
+        $callback = 'https://ef81c8e4.ngrok.io/module/ezdefi/callback';
 
 		$total = $order->total_paid_tax_incl;
 		$discount = $currencyData['discount'];
