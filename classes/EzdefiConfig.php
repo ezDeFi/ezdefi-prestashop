@@ -57,6 +57,11 @@ class EzdefiConfig
 		return $this->getConfig('EZDEFI_API_KEY');
 	}
 
+    public function getPublicKey()
+    {
+        return $this->getConfig('EZDEFI_PUBLIC_KEY');
+    }
+
 	/**
 	 * Get accepted cryptocurrencies
 	 *

@@ -36,7 +36,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 			case 'create_payment':
 				$response = $this->createPayment(
 					(int) Tools::getValue('uoid', ''),
-					(string) Tools::getValue('symbol', ''),
+					(array) Tools::getValue('coin_data', ''),
 					(string) Tools::getValue('method', '')
 				);
 				break;
@@ -66,42 +66,36 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	 * @throws PrestaShopException
 	 * @throws SmartyException
 	 */
-	protected function createPayment($uoid, $symbol, $method)
+	protected function createPayment($uoid, $coin_data, $method)
 	{
-		if(empty($uoid) || empty($symbol) || empty($method)) {
-			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
+		if(empty($uoid) || empty($coin_data) || empty($method)) {
+			return "<div style='text-align:center'>aCan't create payment. Please contact with shop owner</div>";
 		}
 
 		if(is_null($order = $this->helper->getOrderById($uoid))) {
-			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>bCan't create payment. Please contact with shop owner</div>";
 		}
 
-		$currencyData = $this->config->getCurrencyOptionData($symbol);
-
-		if(is_null($currencyData)) {
-			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
-		}
-
-		if(!in_array($method, $this->config->getPaymentMethods())) {
-			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
+		if(!in_array($method, array( 'ezdefi_wallet', 'amount_id' ))) {
+			return "<div style='text-align:center'>cCan't create payment. Please contact with shop owner</div>";
 		}
 
 		$amountId = ($method === 'amount_id') ? true : false;
 
 		$paymentData = $this->preparePaymentData(
 			$order,
-			$currencyData,
+            $coin_data,
 			$amountId
 		);
 
 		if(is_null($paymentData)) {
-			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>dCan't create payment. Please contact with shop owner</div>";
 		}
 
 		$payment = $this->api->createPayment($paymentData);
 
 		if(is_null($payment)) {
-			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>eCan't create payment. Please contact with shop owner</div>";
 		}
 
 		if($amountId) {
@@ -112,7 +106,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 
 		$data = array(
 			'amount_id' => str_replace(',', '', $value),
-			'currency' => $symbol,
+			'currency' => $coin_data['symbol'],
 			'order_id' => substr($payment['uoid'], 0, strpos($payment['uoid'],'-')),
 			'status' => 'not_paid',
 			'payment_method' => ($amountId) ? 'amount_id' : 'ezdefi_wallet',
@@ -124,7 +118,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 			'payment' => $payment,
 			'order' => $order,
 			'fiat' => $this->helper->getCurrencyIsoCode($order->id_currency),
-			'currencyData' => $currencyData,
+			'coin_data' => $coin_data,
 			'modulePath' => _MODULE_DIR_ . 'ezdefi',
 		));
 
@@ -157,43 +151,42 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	 *
 	 * @return array|null
 	 */
-	protected function preparePaymentData($order, $currencyData, $amountId = false)
+	protected function preparePaymentData($order, $coin_data, $amountId = false)
 	{
 		$callback = $this->context->link->getModuleLink($this->module->name, 'callback', array(), true);
-//        $callback = 'https://ef81c8e4.ngrok.io/index.php?fc=module&module=ezdefi&controller=callback';
-        $callback = 'https://ef81c8e4.ngrok.io/module/ezdefi/callback';
 
 		$total = $order->total_paid_tax_incl;
-		$discount = $currencyData['discount'];
+		$discount = $coin_data['discount'];
 		$value = $total - ($total * ($discount / 100));
 
 		$id_currency = $order->id_currency;
 		$fiat = $this->helper->getCurrencyIsoCode($id_currency);
 
 		if($amountId) {
-			$value = $this->helper->generateUniqueAmountId($fiat, $value, $currencyData);
-		}
+			$rate = $this->api->getTokenExchange($fiat, $coin_data['symbol']);
 
-		if(!$value) {
-			return null;
+			if(is_null($rate)) {
+			    return null;
+            }
+
+            $value = round( $value * $rate, $coin_data['decimal'] );
 		}
 
 		$uoid = ($amountId) ? ($order->id . '-1') : ($order->id . '-0');
 
 		$data = [
 			'uoid' => $uoid,
-			'to' => $currencyData['wallet_address'],
+			'to' => $coin_data['wallet_address'],
 			'value' => $value,
-			'safedist' => (isset($currencyData['block_confirm'] ) ) ? $currencyData['block_confirm'] : 1,
-			'duration' => (isset($currencyData['lifetime'] ) ) ? ((int) $currencyData['lifetime'] * 60) : 900,
 			'callback' => $callback,
+            'coinId' => $coin_data['_id']
 		];
 
 		if($amountId) {
 			$data['amountId'] = true;
-			$data['currency'] = $currencyData['symbol'] . ':' . $currencyData['symbol'];
+			$data['currency'] = $coin_data['symbol'] . ':' . $coin_data['symbol'];
 		} else {
-			$data['currency'] = $fiat . ':' . $currencyData['symbol'];
+			$data['currency'] = $fiat . ':' . $coin_data['symbol'];
 		}
 
 		return $data;

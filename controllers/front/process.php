@@ -8,6 +8,8 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 
 	protected $config;
 
+	protected $api;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -17,6 +19,8 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 		$this->db = new EzdefiDb();
 
 		$this->config = new EzdefiConfig();
+
+		$this->api = new EzdefiApi();
 	}
 
 	/**
@@ -37,9 +41,21 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 			return $this->redirectToFirstStep();
 		}
 
-        $selectedCurrency = Tools::getValue('ezdefi_currency');
+        $coin_id = Tools::getValue('ezdefi_coin');
 
-        if(empty($selectedCurrency)) {
+		$website_config = $this->api->getWebsiteConfig();
+
+        $coins = $website_config['coins'];
+
+        $coin_data = null;
+
+        foreach ( $coins as $key => $coin ) {
+            if ( $coin['_id'] == $coin_id ) {
+                $coin_data = $coins[$key];
+            }
+        }
+
+        if(empty($coin_data)) {
             array_push($this->errors, $this->module->l('Please select cryptocurrency'), false);
             return $this->redirectWithNotifications(
                 $this->context->link->getPageLink('order', null, null, array('step' => '3'))
@@ -52,10 +68,12 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 
 		$order = Order::getByCartId($this->getCart()->id);
 
-		$acceptedCurrencies = $this->config->getAcceptedCurrencies();
 		$total = $order->total_paid_tax_incl;
+        $to = implode(',', array_map( function ( $coin ) {
+            return $coin['token']['symbol'];
+        }, $coins ) );
 		$from = $from = $this->helper->getCurrencyIsoCode((int) $order->id_currency);
-		$exchanges = $this->helper->getExchanges($total, $from);
+		$exchanges = $this->api->getTokenExchanges($total, $from, $to);
 
 		$paymentMethods = $this->config->getPaymentMethods();
 
@@ -83,13 +101,24 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 
 		$modulePath = _MODULE_DIR_ . 'ezdefi';
 
+        foreach ($coins as $key => $c) {
+            $coins[$key]['json_data'] = array(
+                '_id' => $c['_id'],
+                'discount' => $c['discount'],
+                'wallet_address' => $c['walletAddress'],
+                'symbol' => $c['token']['symbol'],
+                'decimal' => $c['decimal']
+            );
+        }
+
 		$this->context->smarty->assign(array(
-			'acceptedCurrencies' => $acceptedCurrencies,
+		    'website_config' => $website_config,
+			'coins' => $coins,
 			'exchanges' => $exchanges,
 			'paymentMethods' => $paymentMethods,
 			'processData' => $processData,
 			'modulePath' => $modulePath,
-			'selectedCurrency' => $selectedCurrency,
+			'selectedCurrency' => $coin_data,
 		));
 
 		$this->setTemplate('module:ezdefi/views/templates/front/process.tpl');

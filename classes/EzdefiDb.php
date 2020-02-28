@@ -9,41 +9,6 @@ class EzdefiDb
         $this->config = new EzdefiConfig();
     }
 
-    /**
-	 * Create ezdefi_amount_ids table
-	 *
-	 * @return bool
-	 */
-	public function createAmountIdsTable()
-	{
-		$table_name = _DB_PREFIX_ . 'ezdefi_amount_ids';
-
-		$query = "CREATE TABLE IF NOT EXISTS $table_name (
-        id int(11) NOT NULL AUTO_INCREMENT,
-			amount_key int(11) NOT NULL,
-			price decimal(20,12) NOT NULL,
-			amount_id decimal(20,12) NOT NULL,
-			currency varchar(10) NOT NULL,
-			expired_time timestamp default current_timestamp,
-			PRIMARY KEY (id),
-			UNIQUE (amount_id, currency)
-		);";
-
-		return DB::getInstance()->execute($query);
-	}
-
-	/**
-	 * Drop ezdefi_amount_ids table
-	 *
-	 * @return bool
-	 */
-	public function dropAmountIdsTable()
-	{
-		$amount_ids_table_name = _DB_PREFIX_ . 'ezdefi_amount_ids';
-
-		return DB::getInstance()->execute("DROP TABLE $amount_ids_table_name");
-	}
-
 	/**
 	 * Create ezdefi_exceptions table
 	 *
@@ -80,60 +45,10 @@ class EzdefiDb
 	}
 
 	/**
-	 * Add procedure to generate unique amount id number
-	 */
-	public function addProcedure()
-	{
-		$table_name = _DB_PREFIX_ . 'ezdefi_amount_ids';
-
-		DB::getInstance()->execute("DROP PROCEDURE IF EXISTS `ps_ezdefi_generate_amount_id`" );
-
-		DB::getInstance()->execute("
-	        CREATE PROCEDURE `ps_ezdefi_generate_amount_id`(
-	            IN value DECIMAl(20,12),
-			    IN token VARCHAR(10),
-			    IN decimal_number INT(2),
-                IN life_time INT(11),
-			    OUT amount_id DECIMAL(20,12)
-			)
-			BEGIN
-			    DECLARE unique_id INT(11) DEFAULT 0;
-			    IF EXISTS (SELECT 1 FROM $table_name WHERE `currency` = token AND `price` = value) THEN
-			        IF EXISTS (SELECT 1 FROM $table_name WHERE `currency` = token AND `price` = value AND `amount_key` = 0 AND `expired_time` > NOW()) THEN
-				        SELECT MIN(t1.amount_key+1) INTO unique_id FROM $table_name t1 LEFT JOIN $table_name t2 ON t1.amount_key + 1 = t2.amount_key AND t2.price = value AND t2.currency = token AND t2.expired_time > NOW() WHERE t2.amount_key IS NULL;
-				        IF((unique_id % 2) = 0) THEN
-				            SET amount_id = value + ((unique_id / 2) / POW(10, decimal_number));
-				        ELSE
-				            SET amount_id = value - ((unique_id - (unique_id DIV 2)) / POW(10, decimal_number));
-				        END IF;
-			        ELSE
-			            SET amount_id = value;
-			        END IF;
-			    ELSE
-			        SET amount_id = value;
-			    END IF;
-			    INSERT INTO $table_name (amount_key, price, amount_id, currency, expired_time)
-                    VALUES (unique_id, value, amount_id, token, NOW() + INTERVAL life_time SECOND + INTERVAL 10 SECOND)
-                    ON DUPLICATE KEY UPDATE `expired_time` = NOW() + INTERVAL life_time SECOND + INTERVAL 10 SECOND;
-			END
-		" );
-	}
-
-	/**
-	 * Add schedule events to clear ezdefi_amount_ids table and ezdefi_exceptions table
+	 * Add schedule events to clear ezdefi_exceptions table
 	 */
 	public function addEvents()
 	{
-		$amount_ids_table = _DB_PREFIX_ . 'ezdefi_amount_ids';
-
-		// Add schedule event to clear amount id table
-		DB::getInstance()->execute("
-			CREATE EVENT IF NOT EXISTS `ps_ezdefi_clear_amount_ids_table`
-			ON SCHEDULE EVERY 3 DAY
-			DO
-				DELETE FROM $amount_ids_table;
-		");
-
 		$exceptions_table = _DB_PREFIX_ . 'ezdefi_exceptions';
 
 		// Add schedule event to clear exception table
@@ -143,47 +58,6 @@ class EzdefiDb
 			DO
 				DELETE FROM $exceptions_table;
 		");
-	}
-
-	/**
-	 * Generate unique amount id
-	 *
-	 * @param $price
-	 * @param $currencyData
-	 *
-	 * @return float|null
-	 */
-	public function generateUniqueAmountId($price, $currencyData, $acceptable_variation)
-	{
-		$decimal = $currencyData['decimal'];
-		$symbol = $currencyData['symbol'];
-		$life_time = (int) $currencyData['lifetime'] * 60;
-
-		$price = round($price, $decimal);
-
-		$db = DB::getInstance();
-
-		$query = "CALL ps_ezdefi_generate_amount_id('$price', '$symbol', $decimal, $life_time, @amount_id)";
-
-		try {
-			$db->execute($query);
-			$result = $db->getValue("SELECT @amount_id");
-		} catch (Exception $e) {
-			return null;
-		}
-
-		$amount_id = floatval($result);
-
-		$variation_percent = $acceptable_variation / 100;
-
-		$min = floatval($price - ($price * $variation_percent));
-		$max = floatval($price + ($price * $variation_percent));
-
-		if(($amount_id < $min) || ($amount_id > $max)) {
-			return null;
-		}
-
-		return $amount_id;
 	}
 
 	/**

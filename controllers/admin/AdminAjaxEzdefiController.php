@@ -41,6 +41,30 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 	    $this->ajaxDie('true');
     }
 
+    public function ajaxProcessCheckPublicKey()
+    {
+        $apiUrl = Tools::getValue('api_url', '');
+        $apiKey = Tools::getValue('api_key', '');
+        $publicKey = Tools::getValue('public_key', '');
+
+        if(empty($apiUrl) || empty($apiKey) || empty($publicKey)) {
+            $this->ajaxDie('false');
+        }
+
+        $api = new EzdefiApi();
+        $api->setApiUrl($apiUrl);
+        $api->setApiKey($apiKey);
+        $api->setPublicKey($publicKey);
+
+        $result = $api->getWebsiteConfig();
+
+        if(is_null($result)) {
+            $this->ajaxDie('false');
+        }
+
+        $this->ajaxDie('true');
+    }
+
 	public function ajaxProcessGetTokens()
     {
 	    $apiUrl = Tools::getValue('api_url', '');

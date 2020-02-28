@@ -18,10 +18,7 @@ class Ezdefi extends PaymentModule
 	protected $configFields = array(
 		'EZDEFI_API_URL',
 		'EZDEFI_API_KEY',
-		'EZDEFI_AMOUNT_ID',
-		'EZDEFI_EZDEFI_WALLET',
-		'EZDEFI_ACCEPTABLE_VARIATION',
-		'EZDEFI_CURRENCY'
+        'EZDEFI_PUBLIC_KEY'
 	);
 
     protected $api;
@@ -94,11 +91,7 @@ class Ezdefi extends PaymentModule
 
     public function installDb()
     {
-	    $this->db->createAmountIdsTable();
-
 	    $this->db->createExceptionsTable();
-
-	    $this->db->addProcedure();
 
 	    $this->db->addEvents();
 
@@ -155,8 +148,6 @@ class Ezdefi extends PaymentModule
 
     public function uninstallDb()
     {
-	    $this->db->dropAmountIdsTable();
-
 	    $this->db->dropExceptionsTable();
 
 	    return true;
@@ -188,19 +179,23 @@ class Ezdefi extends PaymentModule
 
     	$from = $this->helper->getCurrencyIsoCode((int) $cart->id_currency);
 
-	    $acceptedCurrencies = $this->config->getAcceptedCurrencies();
+        $coins = $this->api->getWebsiteCoins();
 
-	    $exchanges = $this->helper->getExchanges($total, $from);
+        $to = implode(',', array_map( function ( $coin ) {
+            return $coin['token']['symbol'];
+        }, $coins ) );
+
+	    $exchanges = $this->api->getTokenExchanges($total, $from, $to);
 
     	$this->smarty->assign([
     		'exchanges' => $exchanges,
-		    'acceptedCurrencies' => $acceptedCurrencies,
+		    'coins' => $coins,
 		    'modulePath' => $this->_path
 	    ]);
 
         $option = new PaymentOption();
         $option->setModuleName($this->name)
-               ->setInputs([['type' => 'hidden', 'name' => 'ezdefi_currency', 'value' => '']])
+               ->setInputs([['type' => 'hidden', 'name' => 'ezdefi_coin', 'value' => '']])
                ->setCallToActionText('Pay with Cryptocurrencies')
                ->setAction($this->context->link->getModuleLink($this->name, 'process', array(), true))
                ->setAdditionalInformation($this->fetch('module:ezdefi/views/templates/front/ezdefi_checkout.tpl'));
@@ -230,15 +225,9 @@ class Ezdefi extends PaymentModule
             );
         }
 
-        if(!$this->isAmountIdEnabled() && !$this->isEzdefiWalletEnabled()) {
+        if(!$this->getValue('EZDEFI_PUBLIC_KEY')) {
             $this->setPostError(
-                $this->l('You must enabled at least one payment methods')
-            );
-        }
-
-        if($this->isAmountIdEnabled() && !$this->getValue('EZDEFI_ACCEPTABLE_VARIATION')) {
-            $this->setPostError(
-                $this->l('Acceptable price variation is required')
+                $this->l('Public key is required')
             );
         }
     }
@@ -313,7 +302,6 @@ class Ezdefi extends PaymentModule
 		    $this->_path . 'views/js/logs.js'
 	    );
 
-	    $this->context->controller->addJqueryUI('ui.sortable');
 	    $this->context->controller->addJS($js);
     }
 
@@ -340,34 +328,11 @@ class Ezdefi extends PaymentModule
                         'desc' => '<a target="_blank" href="https://merchant.ezdefi.com/register?utm_source=prestashop-download">' . $this->l('Register to get API Key') . '</a>'
                     ),
                     array(
-                        'type' => 'ezdefi_method_checkbox',
-                        'name' => 'EZDEFI_PAYMENT_METHOD',
-                        'label' => $this->l('Payment methods'),
-                        'required' => true
-                    ),
-                    array(
                         'type' => 'text',
-                        'label' => $this->l('Acceptable price variation'),
-                        'name' => 'EZDEFI_ACCEPTABLE_VARIATION',
-                        'placeholder' => '0.01',
-                        'desc' => 'Allowable amount variation (%)'
+                        'label' => $this->l('Public Key'),
+                        'name' => 'EZDEFI_PUBLIC_KEY',
+                        'required' => true,
                     ),
-                )
-            )
-        );
-
-        $fields_form_currency = array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->l('Accepted Cryptocurrency')
-                ),
-                'input' => array(
-                    array(
-                        'type' => 'currency_table',
-                        'label' => $this->l('asfasf'),
-                        'name' => 'EZDEFI_CURRENCY',
-                        'required' => true
-                    )
                 )
             )
         );
@@ -410,7 +375,7 @@ class Ezdefi extends PaymentModule
             'fields_value' => $this->getConfigFieldsValues()
         );
 
-        return $helper->generateForm(array($fields_form, $fields_form_currency, $form_submit_button));
+        return $helper->generateForm(array($fields_form, $form_submit_button));
     }
 
     public function getConfigFieldsValues()
@@ -418,10 +383,7 @@ class Ezdefi extends PaymentModule
         return array(
             'EZDEFI_API_URL' => $this->getValue('EZDEFI_API_URL', $this->config->getConfig('EZDEFI_API_URL')),
             'EZDEFI_API_KEY' => $this->getValue('EZDEFI_API_KEY', $this->config->getConfig('EZDEFI_API_KEY')),
-            'EZDEFI_AMOUNT_ID' => $this->getValue('EZDEFI_AMOUNT_ID', $this->config->getConfig('EZDEFI_AMOUNT_ID')),
-            'EZDEFI_ACCEPTABLE_VARIATION' => $this->getValue('EZDEFI_ACCEPTABLE_VARIATION', $this->config->getConfig('EZDEFI_ACCEPTABLE_VARIATION')),
-            'EZDEFI_EZDEFI_WALLET' => $this->getValue('EZDEFI_EZDEFI_WALLET', $this->config->getConfig('EZDEFI_EZDEFI_WALLET')),
-            'EZDEFI_CURRENCY' => $this->getCurrencyConfig(),
+            'EZDEFI_PUBLIC_KEY' => $this->getValue('EZDEFI_PUBLIC_KEY', $this->config->getConfig('EZDEFI_PUBLIC_KEY')),
         );
     }
 
@@ -437,69 +399,6 @@ class Ezdefi extends PaymentModule
         }
 
         return Tools::getValue($key, $default);
-    }
-
-    protected function isAmountIdEnabled()
-    {
-        return ($this->getValue('EZDEFI_AMOUNT_ID') == 1);
-    }
-
-    protected function isEzdefiWalletEnabled()
-    {
-        return ($this->getValue('EZDEFI_EZDEFI_WALLET') == 1);
-    }
-
-    protected function getCurrencyConfig()
-    {
-    	$config = $this->config->getAcceptedCurrencies();
-
-    	if(!empty($config)) {
-    		return $config;
-	    }
-
-		return $this->getDefaultCurrencies();
-    }
-
-    protected function getDefaultCurrencies()
-    {
-    	return [
-		    [
-			    'logo' => $this->_path . 'views/images/newsd-icon.png',
-				'symbol' => 'newsd',
-				'name' => 'NewSD',
-				'desc' => 'NewSD',
-				'decimal' => 4,
-			    'discount' => 0,
-			    'lifetime' => 15,
-			    'block_confirm' => 1,
-			    'wallet_address' => '',
-			    'decimal_max' => 6
-		    ],
-		    [
-			    'logo' => $this->_path . 'views/images/bitcoin-icon.png',
-				'symbol' => 'btc',
-				'name' => 'Bitcoin',
-				'desc' => 'Bitcoin',
-				'decimal' => 8,
-			    'discount' => 0,
-			    'lifetime' => 15,
-			    'block_confirm' => 1,
-			    'wallet_address' => '',
-			    'decimal_max' => 8
-		    ],
-		    [
-		        'logo' => $this->_path . 'views/images/ethereum-icon.png',
-				'symbol' => 'eth',
-				'name' => 'Ethereum',
-				'desc' => 'Ethereum',
-				'decimal' => 8,
-			    'discount' => 0,
-			    'lifetime' => 15,
-			    'block_confirm' => 1,
-			    'wallet_address' => '',
-			    'decimal_max' => 18
-		    ]
-	    ];
     }
 
     public function setPostError($error)

@@ -62,25 +62,6 @@ class EzdefiHelper
 	}
 
 	/**
-	 * Get token exchanges
-	 *
-	 * @param $total
-	 * @param $from
-	 *
-	 * @return array|bool
-	 */
-	public function getExchanges($total, $from)
-	{
-		$acceptedCurrencies = $this->config->getAcceptedCurrencies();
-
-		$to = implode(',', array_map(function ($currency) {
-			return $currency['symbol'];
-		}, $acceptedCurrencies));
-
-		return $this->api->getTokenExchanges($total, $from, $to);
-	}
-
-	/**
 	 * Set order awaiting
 	 *
 	 * @param $order_id
@@ -109,32 +90,5 @@ class EzdefiHelper
 		$order = new Order($order_id);
 
 		return $order->setCurrentState($this->config->getConfig('PS_OS_PAYMENT'));
-	}
-
-	/**
-	 * Generate unique amount id
-	 *
-	 * @param $fiat
-	 * @param $value
-	 * @param $currencyData
-	 *
-	 * @return float|int|null
-	 */
-	public function generateUniqueAmountId($fiat, $value, $currencyData)
-	{
-		$token = $currencyData['symbol'];
-		$rate = $this->api->getTokenExchange($fiat, $token);
-
-		if(!$rate) {
-			return null;
-		}
-
-		$value = $value * $rate;
-
-		$acceptable_variation = $this->config->getConfig('EZDEFI_ACCEPTABLE_VARIATION');
-
-		$value = $this->db->generateUniqueAmountId($value, $currencyData, $acceptable_variation);
-
-		return $value;
 	}
 }

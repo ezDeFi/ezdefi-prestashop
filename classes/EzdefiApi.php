@@ -6,6 +6,8 @@ class EzdefiApi
 
     protected $apiKey;
 
+    protected $publicKey;
+
     protected $config;
 
     public function __construct()
@@ -39,6 +41,20 @@ class EzdefiApi
     public function setApiKey($apiKey)
     {
     	return $this->apiKey = $apiKey;
+    }
+
+    public function getPublicKey()
+    {
+        if(!empty($this->publicKey)) {
+            return $this->publicKey;
+        }
+
+        return $this->publicKey = $this->config->getPublicKey();
+    }
+
+    public function setPublicKey($publicKey)
+    {
+        return $this->publicKey = $publicKey;
     }
 
 	/**
@@ -88,24 +104,6 @@ class EzdefiApi
         curl_close($ch);
 
         return $formattedResponse;
-    }
-
-	/**
-	 * Get list supported token
-	 *
-	 * @param string $keyword
-	 *
-	 * @return array|bool
-	 */
-    public function getTokens($keyword = '')
-    {
-        if(!empty($keyword)) {
-            return $this->call('token/list', 'get', [
-                'keyword' => $keyword
-            ]);
-        }
-
-        return $this->call('token', 'get');
     }
 
 	/**
@@ -174,6 +172,24 @@ class EzdefiApi
 	{
 		return $this->call('user/show', 'get');
 	}
+
+    public function getWebsiteConfig()
+    {
+        $public_key = $this->getPublicKey();
+
+        return $this->call( "website/$public_key" );
+    }
+
+    public function getWebsiteCoins()
+    {
+        $website_config = $this->getWebsiteConfig();
+
+        if( is_null( $website_config ) ) {
+            return null;
+        }
+
+        return $website_config['coins'];
+    }
 
 	/**
 	 * Get transaction detail
