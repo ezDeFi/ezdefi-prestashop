@@ -227,7 +227,7 @@ class Ezdefi extends PaymentModule
 
         if(!$this->getValue('EZDEFI_PUBLIC_KEY')) {
             $this->setPostError(
-                $this->l('Public key is required')
+                $this->l('Webiste ID is required')
             );
         }
     }
@@ -329,7 +329,7 @@ class Ezdefi extends PaymentModule
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Public Key'),
+                        'label' => $this->l('Webiste ID'),
                         'name' => 'EZDEFI_PUBLIC_KEY',
                         'required' => true,
                     ),

@@ -117,7 +117,7 @@ jQuery(function($) {
         }
       },
       messages: {
-        remote: 'Public Key is not correct. Please check again'
+        remote: 'Website\' ID is not correct. Please check again'
       }
     });
   };
