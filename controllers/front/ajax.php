@@ -178,6 +178,8 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 			'uoid' => $uoid,
 			'to' => $coin_data['wallet_address'],
 			'value' => $value,
+			'safedist' => $coin_data['block_confirm'],
+		    'duration' => $coin_data['duration'] * 60,
 			'callback' => $callback,
             'coinId' => $coin_data['_id']
 		];

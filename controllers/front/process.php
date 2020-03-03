@@ -107,7 +107,9 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
                 'discount' => $c['discount'],
                 'wallet_address' => $c['walletAddress'],
                 'symbol' => $c['token']['symbol'],
-                'decimal' => $c['decimal']
+                'decimal' => $c['decimal'],
+                'block_confirmation' => $c['blockConfirmation'],
+                'duration' => $c['expiration']
             );
         }
 
