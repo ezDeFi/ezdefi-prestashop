@@ -93,6 +93,7 @@ class EzdefiApi
 	    curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
 	    curl_setopt($ch, CURLOPT_VERBOSE, true);
 	    curl_setopt($ch, CURLOPT_STDERR, fopen('php://stderr', 'w'));
