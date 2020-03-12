@@ -1,6 +1,3 @@
-{assign var=total value=$order->total_paid_tax_incl}
-{assign var=discount value=$coin_data['discount']}
-{assign var=total value=($total - ($total * ($discount / 100)))}
 <div class="ezdefi-payment" data-paymentid="{$payment['_id']}">
   {if not $payment}
     Can not get payment

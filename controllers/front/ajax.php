@@ -114,9 +114,14 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 
 		$this->db->addException($data);
 
+		$total = $order->total_paid_tax_incl;
+		$discount = $coin_data['discount'];
+		$total = $total * (number_format(100 - $discount, 6) / 100);
+
 		$this->context->smarty->assign(array(
 			'payment' => $payment,
 			'order' => $order,
+			'total' => $total,
 			'fiat' => $this->helper->getCurrencyIsoCode($order->id_currency),
 			'coin_data' => $coin_data,
 			'modulePath' => _MODULE_DIR_ . 'ezdefi',
