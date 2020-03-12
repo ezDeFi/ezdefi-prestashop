@@ -69,15 +69,15 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	protected function createPayment($uoid, $coin_data, $method)
 	{
 		if(empty($uoid) || empty($coin_data) || empty($method)) {
-			return "<div style='text-align:center'>aCan't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		if(is_null($order = $this->helper->getOrderById($uoid))) {
-			return "<div style='text-align:center'>bCan't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		if(!in_array($method, array( 'ezdefi_wallet', 'amount_id' ))) {
-			return "<div style='text-align:center'>cCan't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		$amountId = ($method === 'amount_id') ? true : false;
@@ -89,13 +89,13 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 		);
 
 		if(is_null($paymentData)) {
-			return "<div style='text-align:center'>dCan't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		$payment = $this->api->createPayment($paymentData);
 
 		if(is_null($payment)) {
-			return "<div style='text-align:center'>eCan't create payment. Please contact with shop owner</div>";
+			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
 		if($amountId) {
