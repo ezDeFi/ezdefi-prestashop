@@ -43,7 +43,7 @@
   </div>
 </div>
 <div class="panel col-lg-12">
-  <div class="panel-heading">Transactions Log</div>
+  <div class="panel-heading">Ezdefi Exceptions</div>
   <table class="table" id="ezdefi-transaction-logs">
     <thead class="thead-default">
     <tr class="column-headers">

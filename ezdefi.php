@@ -72,7 +72,7 @@ class Ezdefi extends PaymentModule
 
     public function install()
     {
-		if(parent::install() && $this->installDb() && $this->installTab() && $this->installOrderState() && $this->registerHook('paymentOptions')) {
+		if(parent::install() && $this->installDb() && $this->installTab() && $this->addMenuLink() && $this->installOrderState() && $this->registerHook('paymentOptions')) {
 			$this->active = true;
 			return true;
 		}
@@ -112,6 +112,18 @@ class Ezdefi extends PaymentModule
 	    }
 
 	    return $tab->add();
+    }
+
+    public function addMenuLink()
+    {
+        $tab             = new \Tab();
+        $tab->id_parent  = 42;
+        $tab->name = array_fill_keys(array_values(\Language::getIDs(true)), 'Ezdefi Exceptions');
+        $tab->class_name = 'AdminEzdefiException';
+        $tab->module     = $this->name;
+        $tab->active = 1;
+
+        return $tab->save();
     }
 
     public function installOrderState()
@@ -262,21 +274,10 @@ class Ezdefi extends PaymentModule
 
 	    $this->postProcess();
 
-    	$tabModule = Tools::getValue('tab_module');
-    	$activeTab = '';
-
-    	if(!$tabModule || empty($tabModule)) {
-    		$activeTab = 'ezdefi-settings';
-	    } else if(($tabModule === 'ezdefi-settings') || ($tabModule === 'ezdefi-logs')) {
-    		$activeTab = $tabModule;
-	    }
-
     	$this->loadAssets();
 
     	$this->context->smarty->assign(array(
-    		'activeTab' => $activeTab,
 		    'settings_output' => $this->renderForm(),
-		    'logs_output' => '',
 		    'ezdefiAdminUrl' => $this->context->link->getAdminLink('AdminAjaxEzdefi')
 	    ));
 
@@ -288,18 +289,14 @@ class Ezdefi extends PaymentModule
     public function loadAssets()
     {
 	    $css = array(
-		    $this->_path . 'views/css/select2.min.css',
 		    $this->_path . 'views/css/settings.css',
-		    $this->_path . 'views/css/logs.css'
 	    );
 
 	    $this->context->controller->addCSS($css);
 
 	    $js = array(
 		    $this->_path . 'views/js/jquery.validate.min.js',
-		    $this->_path . 'views/js/select2.min.js',
 		    $this->_path . 'views/js/admin.js',
-		    $this->_path . 'views/js/logs.js'
 	    );
 
 	    $this->context->controller->addJS($js);
