@@ -117,7 +117,7 @@ jQuery(function($) {
         }
       },
       messages: {
-        remote: 'Website\' ID is not correct. Please check again'
+        remote: 'Website\'s ID is not correct. Please check again'
       }
     });
   };
