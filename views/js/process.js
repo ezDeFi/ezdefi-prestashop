@@ -90,7 +90,7 @@ jQuery(function($) {
       },
       success: function(response) {
         active.html($(response.data));
-        self.setTimeRemaining.call(self, panel);
+        self.setTimeRemaining.call(self, active);
         self.$loader.hide();
         self.$tabs.show();
         self.$currencySelect.show();
