@@ -17,9 +17,6 @@
               {assign var="price" value=number_format($discounted, 8)}
               <div class="currency-item__wrap">
                 <div class="currency-item {(isset($selectedCurrency) && $c['_id'] === $selectedCurrency['_id']) ? 'selected' : ''}" data-id="{$c['_id']}" data-symbol="{$c['token']['symbol']}" >
-                  <script type="application/json">
-                    {$c['json_data']|@json_encode nofilter}
-                  </script>
                   <div class="item__logo">
                     <img src="{$c['token']['logo']}" alt="">
                       {if not empty($c['token']['desc'])}

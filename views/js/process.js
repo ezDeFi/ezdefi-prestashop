@@ -73,14 +73,14 @@ jQuery(function($) {
     var active = panel ? panel : this.$tabs.find(selectors.panel + '.active');
     var method = active.attr('id');
     var selectedCoin = this.$currencySelect.find('.selected');
-    var coin_data = JSON.parse(selectedCoin.find('script[type="application/json"]').html());
+    var coin_id = selectedCoin.attr('data-id');
     $.ajax({
       url: self.processData.ajaxUrl,
       method: 'post',
       data: {
         action: 'create_payment',
         uoid: self.processData.uoid,
-        coin_data: coin_data,
+        coin_id: coin_id,
         method: method
       },
       beforeSend: function() {

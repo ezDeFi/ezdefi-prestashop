@@ -101,18 +101,6 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 
 		$modulePath = _MODULE_DIR_ . 'ezdefi';
 
-        foreach ($coins as $key => $c) {
-            $coins[$key]['json_data'] = array(
-                '_id' => $c['_id'],
-                'discount' => $c['discount'],
-                'wallet_address' => $c['walletAddress'],
-                'symbol' => $c['token']['symbol'],
-                'decimal' => $c['decimal'],
-                'block_confirmation' => $c['blockConfirmation'],
-                'duration' => $c['expiration']
-            );
-        }
-
 		$this->context->smarty->assign(array(
 		    'website_config' => $website_config,
 			'coins' => $coins,

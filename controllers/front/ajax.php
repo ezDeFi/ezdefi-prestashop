@@ -36,7 +36,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 			case 'create_payment':
 				$response = $this->createPayment(
 					(int) Tools::getValue('uoid', ''),
-					(array) Tools::getValue('coin_data', ''),
+					(string) Tools::getValue('coin_id', ''),
 					(string) Tools::getValue('method', '')
 				);
 				break;
@@ -66,9 +66,9 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	 * @throws PrestaShopException
 	 * @throws SmartyException
 	 */
-	protected function createPayment($uoid, $coin_data, $method)
+	protected function createPayment($uoid, $coin_id, $method)
 	{
-		if(empty($uoid) || empty($coin_data) || empty($method)) {
+		if(empty($uoid) || empty($coin_id) || empty($method)) {
 			return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
 		}
 
@@ -81,6 +81,21 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 		}
 
 		$amountId = ($method === 'amount_id') ? true : false;
+
+		$website_coins = $this->api->getWebsiteCoins();
+
+        $coin_data = array();
+
+        foreach($website_coins as $website_coin) {
+            if($website_coin['_id'] === $coin_id) {
+                $coin_data = $website_coin;
+                break;
+            }
+        }
+
+        if(empty($coin_data)) {
+            return "<div style='text-align:center'>Can't create payment. Please contact with shop owner</div>";
+        }
 
 		$paymentData = $this->preparePaymentData(
 			$order,
@@ -106,7 +121,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 
 		$data = array(
 			'amount_id' => str_replace(',', '', $value),
-			'currency' => $coin_data['symbol'],
+			'currency' => $coin_data['token']['symbol'],
 			'order_id' => substr($payment['uoid'], 0, strpos($payment['uoid'],'-')),
 			'status' => 'not_paid',
 			'payment_method' => ($amountId) ? 'amount_id' : 'ezdefi_wallet',
@@ -162,7 +177,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 
 		$total = $order->total_paid_tax_incl;
 		$discount = $coin_data['discount'];
-		$value = $total - ($total * ($discount / 100));
+        $value = $total * (number_format(100 - $discount, 6) / 100);
 
 		$id_currency = $order->id_currency;
 		$fiat = $this->helper->getCurrencyIsoCode($id_currency);
@@ -181,19 +196,19 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 
 		$data = [
 			'uoid' => $uoid,
-			'to' => $coin_data['wallet_address'],
+			'to' => $coin_data['walletAddress'],
 			'value' => $value,
-			'safedist' => $coin_data['block_confirmation'],
-		    'duration' => $coin_data['duration'] * 60,
+			'safedist' => $coin_data['blockConfirmation'],
+		    'duration' => $coin_data['expiration'] * 60,
 			'callback' => $callback,
             'coinId' => $coin_data['_id']
 		];
 
 		if($amountId) {
 			$data['amountId'] = true;
-			$data['currency'] = $coin_data['symbol'] . ':' . $coin_data['symbol'];
+			$data['currency'] = $coin_data['token']['symbol'] . ':' . $coin_data['token']['symbol'];
 		} else {
-			$data['currency'] = $fiat . ':' . $coin_data['symbol'];
+			$data['currency'] = $fiat . ':' . $coin_data['token']['symbol'];
 		}
 
 		return $data;
