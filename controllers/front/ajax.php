@@ -183,7 +183,7 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 		$fiat = $this->helper->getCurrencyIsoCode($id_currency);
 
 		if($amountId) {
-			$rate = $this->api->getTokenExchange($fiat, $coin_data['symbol']);
+			$rate = $this->api->getTokenExchange($fiat, $coin_data['token']['symbol']);
 
 			if(is_null($rate)) {
 			    return null;
