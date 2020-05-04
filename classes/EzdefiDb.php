@@ -27,6 +27,7 @@ class EzdefiDb
 			payment_method varchar(100),
 			explorer_url varchar(200) DEFAULT NULL,
 			confirmed tinyint(1) DEFAULT 0 NOT NULL,
+			is_show tinyint(1) DEFAULT 1 NOT NULL,
 			PRIMARY KEY (id)
 		);";
 
