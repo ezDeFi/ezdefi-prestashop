@@ -127,13 +127,11 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 	public function ajaxProcessAssignAmountId()
 	{
-		if(!Tools::getValue('amount_id') || !Tools::getValue('order_id') || !Tools::getValue('currency')) {
+		if(!Tools::getValue('order_id') || !Tools::getValue('exception_id')) {
 			return $this->ajaxDie([], null, null, 400);
 		}
 
-		$amount_id = Tools::getValue('amount_id');
-
-		$currency = Tools::getValue('currency');
+		$exception_id = Tools::getValue('exception_id');
 
 		$old_order_id = (Tools::getValue('old_order_id') && !empty(Tools::getValue('old_order_id'))) ? Tools::getValue('old_order_id') : null;
 
@@ -145,12 +143,29 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 		$this->helper->setOrderDone($order_id);
 
-		if(is_null($old_order_id)) {
-			$this->db->deleteAmountIdException($amount_id, $currency, $old_order_id);
-			$this->db->deleteExceptionByOrderId($order_id);
-		} else {
-			$this->db->deleteExceptionByOrderId($old_order_id );
-		}
+		if($old_order_id && $old_order_id != $order_id && $this->helper->getOrderById($old_order_id)) {
+		    $this->helper->setOrderAwaiting($old_order_id);
+        }
+
+		$this->db->updateExceptions(
+		    array(
+		        'id' => (int) $exception_id
+            ),
+            array(
+                'order_id' => $order_id,
+                'confirmed' => 1
+            )
+        );
+
+        $this->db->updateExceptions(
+            array(
+                'order_id' => $order_id,
+                'explorer_url' => null
+            ),
+            array(
+                'is_show' => 0
+            )
+        );
 
 		$this->ajaxDie();
 	}
@@ -166,26 +181,24 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 	public function ajaxProcessDeleteAmountId()
 	{
-		$amount_id = Tools::getValue('amount_id');
+        if(!Tools::getValue('exception_id')) {
+            return $this->ajaxDie([], null, null, 400);
+        }
 
-		$order_id = (Tools::getValue('order_id'))  ? Tools::getValue('order_id') : null;
+		$exception_id = Tools::getValue('exception_id');
 
-		$currency = Tools::getValue('currency');
-
-		$this->db->deleteAmountIdException($amount_id, $currency, $order_id);
+        $this->db->deleteException($exception_id);
 
 		return $this->ajaxDie();
 	}
 
 	public function ajaxProcessReverseOrder()
 	{
-		if( !Tools::getValue('amount_id') || !Tools::getValue('order_id') || !Tools::getValue('currency')) {
+		if(!Tools::getValue('order_id') || !Tools::getValue('exception_id')) {
 			return $this->ajaxDie([], null, null, 400);
 		}
 
-		$amount_id = Tools::getValue('amount_id');
-
-		$currency = Tools::getValue('currency');
+		$exception_id = Tools::getValue('exception_id');
 
 		$order_id = Tools::getValue('order_id');
 
@@ -197,20 +210,22 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 		$this->helper->setOrderAwaiting($order_id);
 
-		$wheres = array(
-			'amount_id' => $amount_id,
-			'currency' => $currency,
-			'order_id' => $order_id,
-			'status' => 'done'
-		);
+		$this->db->updateExceptions(
+            array( 'id' => (int) $exception_id ),
+            array(
+                'confirmed' => 0
+            )
+        );
 
-		$data = array(
-			'order_id' => null,
-			'status' => null,
-			'payment_method' => null
-		);
-
-		$this->db->updateException( $wheres, $data );
+        $this->db->updateExceptions(
+            array(
+                'order_id' => $order_id,
+                'explorer_url' => null
+            ),
+            array(
+                'is_show' => 1
+            )
+        );
 
 		return $this->ajaxDie();
 	}

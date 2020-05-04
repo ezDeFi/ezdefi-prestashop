@@ -173,7 +173,8 @@ class EzdefiAjaxModuleFrontController extends ModuleFrontController
 	 */
 	protected function preparePaymentData($order, $coin_data, $amountId = false)
 	{
-		$callback = $this->context->link->getModuleLink($this->module->name, 'callback', array(), true);
+//		$callback = $this->context->link->getModuleLink($this->module->name, 'callback', array(), true);
+		$callback = 'http://f6a84386.ngrok.io/module/ezdefi/callback';
 
 		$total = $order->total_paid_tax_incl;
 		$discount = $coin_data['discount'];

@@ -68,6 +68,8 @@ class EzdefiProcessModuleFrontController extends ModuleFrontController
 
 		$order = Order::getByCartId($this->getCart()->id);
 
+//        $order = new Order(51);
+
 		$total = $order->total_paid_tax_incl;
         $to = implode(',', array_map( function ( $coin ) {
             return $coin['token']['symbol'];

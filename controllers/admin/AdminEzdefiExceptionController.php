@@ -24,6 +24,11 @@ class AdminEzdefiExceptionController extends ModuleAdminController
             'ezdefiAdminUrl' => $this->context->link->getAdminLink('AdminAjaxEzdefi')
         ));
 
+        $this->context->smarty->assign(array(
+            'url' => $_SERVER['REQUEST_URI'],
+            'current_type' => Tools::getValue('type'),
+        ));
+
         $this->content .= $this->context->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/logs.tpl');
 
         parent::initContent();

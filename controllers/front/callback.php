@@ -124,48 +124,45 @@ class EzdefiCallbackModuleFrontController extends ModuleFrontController
 		}
 
 		$status = $payment['status'];
+        $uoid = (int) $order_id;
+        $payment_method = $this->isPayAnyWallet( $payment ) ? 'amount_id' : 'ezdefi_wallet';
 
-		if($status === 'PENDING' || $status === 'EXPIRED') {
+        if($status === 'PENDING' || $status === 'EXPIRED') {
 			return false;
 		}
 
-		if(isset( $payment['amountId'] ) && $payment['amountId'] === true) {
-			$amount_id = $payment['originValue'];
-		} else {
-			$amount_id = $payment['value'] / pow(10, $payment['decimal']);
-		}
+        if( $status === 'DONE' ) {
+            $this->helper->setOrderDone($uoid);
 
-		$currency = $payment['currency'];
+            if( $payment_method === 'ezdefi_wallet' ) {
+                $this->db->deleteExceptions( array(
+                    'order_id' => $uoid
+                ) );
+                return true;
+            }
+        }
 
-		$exception_data = array(
-			'status' => strtolower($status),
-			'explorer_url' => (string) self::EXPLORER_URL . $payment['transactionHash']
-		);
+        $value = ( $payment_method === 'amount_id' ) ? $payment['originValue'] : ( $payment['value'] / pow( 10, $payment['decimal'] ) );
 
-		$wheres = array(
-			'amount_id' => $this->sanitizeFloatValue($amount_id),
-			'currency' => (string) $currency,
-			'order_id' => (int) $order_id
-		);
+        $this->db->updateException(
+            array(
+                'order_id' => $uoid,
+                'payment_method' => $payment_method,
+            ),
+            array(
+                'amount_id' => $this->sanitizeFloatValue( $value ),
+                'currency' => $payment['token']['symbol'],
+                'status' => strtolower( $status ),
+                'explorer_url' => $payment['explorer']['tx'] . $payment['transactionHash']
+            )
+        );
 
-		if( isset($payment['amountId'] ) && $payment['amountId'] = true) {
-			$wheres['payment_method'] = 'amount_id';
-		} else {
-			$wheres['payment_method'] = 'ezdefi_wallet';
-		}
+        $this->db->deleteExceptions( array(
+            'order_id' => $uoid,
+            'explorer_url' => null,
+        ) );
 
-		if( $status === 'DONE' ) {
-			$this->helper->setOrderDone($order_id);
-			$this->db->updateException($wheres, $exception_data);
-
-			if(!isset( $payment['amountId']) || (isset( $payment['amountId'] ) && $payment['amountId'] != true)) {
-				$this->db->deleteExceptionByOrderId( $wheres['order_id']);
-			}
-		} elseif($status === 'EXPIRED_DONE') {
-			$this->db->updateException($wheres, $exception_data);
-		}
-
-		return true;
+        return true;
 	}
 
 	/**
@@ -177,7 +174,7 @@ class EzdefiCallbackModuleFrontController extends ModuleFrontController
 	 */
 	protected function sanitizeFloatValue($value)
 	{
-		$notation = explode('E', $value);
+		$notation = explode('E', strtoupper($value));
 
 		if(count($notation) === 2){
 			$exp = abs(end($notation)) + strlen($notation[0]);
@@ -187,4 +184,13 @@ class EzdefiCallbackModuleFrontController extends ModuleFrontController
 
 		return str_replace( ',', '', $value);
 	}
+
+	protected function isPayAnyWallet($payment)
+    {
+        if( ! is_array( $payment ) ) {
+            return false;
+        }
+
+        return ( isset( $payment['amountId'] ) && $payment['amountId'] = true );
+    }
 }

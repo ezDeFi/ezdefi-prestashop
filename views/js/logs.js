@@ -3,7 +3,9 @@ jQuery(function($) {
 
   var selectors = {
     table: "#ezdefi-transaction-logs",
+    tab: '#ezdefi-transaction-tab',
     select: "#order-select",
+    expceptionIdInput: '.exception-id-input',
     amountIdInput: ".amount-id-input",
     currencyInput: ".currency-input",
     orderIdInput: ".order-id-input",
@@ -23,6 +25,7 @@ jQuery(function($) {
   var Logs = function() {
     this.$table = $(selectors.table);
     this.$pagination = $(selectors.pagination);
+    this.$tab = $(selectors.tab);
 
     var init = this.init.bind(this);
     var onAssign = this.onAssign.bind(this);
@@ -50,10 +53,7 @@ jQuery(function($) {
   };
 
   Logs.prototype.init = function() {
-    var data = {
-      ajax: true,
-      action: "GetExceptions"
-    };
+    var data = this.getAjaxData();
     this.getException.call(this, data);
   };
 
@@ -134,7 +134,8 @@ jQuery(function($) {
     var form = $(selectors.filterForm);
     var data = {
       ajax: true,
-      action: "GetExceptions"
+      action: "GetExceptions",
+      type: this.$tab.find('.active').attr('data-type')
     };
     form.find("input, select").each(function() {
       var val = "";
@@ -230,6 +231,7 @@ jQuery(function($) {
     var self = this;
     var rows = data["data"];
     if (rows.length === 0) {
+      self.$table.find('tbody tr').not('.spinner-row').remove();
       self.$table.append("<tr><td colspan='5'>Not found</td></tr>");
     }
     for (var i = 0; i < rows.length; i++) {
@@ -268,6 +270,7 @@ jQuery(function($) {
           "<input type='hidden' class='amount-id-input' value='" +
           row["amount_id"] +
           "' >" +
+          "<input type='hidden' class='exception-id-input' value='" + row['id'] + "' >" +
           "</td>" +
           "<td>" +
           "<span class='symbol'>" +
@@ -323,7 +326,9 @@ jQuery(function($) {
 
       var last_td;
 
-      if (row["status"] === "done") {
+      if (row['confirmed'] == 1) {
+        html.find('td.order-column .actions').remove();
+        html.find('td.order-column .select-order').remove();
         last_td = $(
           "<td>" +
             "<button class='btn btn-primary reverseBtn'>Reverse</button> " +
@@ -434,17 +439,15 @@ jQuery(function($) {
     e.preventDefault();
     var self = this;
     var row = $(e.target).closest("tr");
-    var old_order_id = row.find(selectors.oldOrderIdInput).val();
     var order_id = row.find(selectors.orderIdInput).val();
-    var amount_id = row.find(selectors.amountIdInput).val();
-    var currency = row.find(selectors.currencyInput).val();
+    var old_order_id = row.find(selectors.oldOrderIdInput).val();
+    var exception_id = row.find(selectors.expceptionIdInput).val();
     var data = {
       ajax: true,
       action: "AssignAmountId",
-      old_order_id: old_order_id,
       order_id: order_id,
-      amount_id: amount_id,
-      currency: currency
+      old_order_id: old_order_id,
+      exception_id: exception_id
     };
     this.callAjax.call(this, data).success(function() {
       var data = self.getAjaxData();
@@ -457,14 +460,12 @@ jQuery(function($) {
     var self = this;
     var row = $(e.target).closest("tr");
     var order_id = row.find(selectors.orderIdInput).val();
-    var amount_id = row.find(selectors.amountIdInput).val();
-    var currency = row.find(selectors.currencyInput).val();
+    var exception_id = row.find(selectors.expceptionIdInput).val();
     var data = {
       ajax: true,
       action: "ReverseOrder",
       order_id: order_id,
-      amount_id: amount_id,
-      currency: currency
+      exception_id: exception_id
     };
     this.callAjax.call(this, data).success(function() {
       var data = self.getAjaxData();
@@ -479,15 +480,11 @@ jQuery(function($) {
     }
     var self = this;
     var row = $(e.target).closest("tr");
-    var order_id = row.find(selectors.orderIdInput).val();
-    var amount_id = row.find(selectors.amountIdInput).val();
-    var currency = row.find(selectors.currencyInput).val();
+    var exception_id = row.find(selectors.expceptionIdInput).val();
     var data = {
       ajax: true,
       action: "DeleteAmountId",
-      order_id: order_id,
-      amount_id: amount_id,
-      currency: currency
+      exception_id: exception_id
     };
     this.callAjax.call(this, data).success(function() {
       var data = self.getAjaxData();

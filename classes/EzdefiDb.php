@@ -25,7 +25,8 @@ class EzdefiDb
 			order_id int(11),
 			status varchar(20),
 			payment_method varchar(100),
-			explorer_url varchar(200),
+			explorer_url varchar(200) DEFAULT NULL,
+			confirmed tinyint(1) DEFAULT 0 NOT NULL,
 			PRIMARY KEY (id)
 		);";
 
@@ -92,7 +93,7 @@ class EzdefiDb
 	 *
 	 * @return bool|void
 	 */
-	public function updateException($wheres = array(), $data = array())
+	public function updateExceptions($wheres = array(), $data = array(), $limit = null)
 	{
 		$exception_table = _DB_PREFIX_ . 'ezdefi_exceptions';
 
@@ -106,7 +107,7 @@ class EzdefiDb
 
 		foreach ($data as $column => $value) {
 			if( is_null($value)) {
-				$query .= $comma . $column . " = NULL";
+				$query .= $comma . $column . " IS NULL";
 			} else {
 				$query .= $comma . $column . " = '" . $value . "'";
 			}
@@ -126,7 +127,7 @@ class EzdefiDb
 						$conditions[] = " $column IS NULL ";
 						break;
 					default :
-						$conditions[] = " $column LIKE '$value%' ";
+                        $conditions[] = " $column = '$value' ";
 						break;
 				}
 			}
@@ -135,6 +136,10 @@ class EzdefiDb
 		if(!empty( $conditions)) {
 			$query .= ' WHERE ' . implode($conditions, 'AND');
 		}
+
+        if(is_numeric($limit)) {
+            $query .= " ORDER BY id DESC LIMIT $limit";
+        }
 
 		return DB::getInstance()->execute($query);
 	}
@@ -163,7 +168,8 @@ class EzdefiDb
 			'order_id' => '',
 			'email' => '',
 			'payment_method' => '',
-			'status' => ''
+			'status' => '',
+            'confirmed' => '',
 		);
 
 		$params = array_merge( $default, $params );
@@ -172,24 +178,38 @@ class EzdefiDb
 
 		$sql = array();
 
-		foreach($params as $column => $param) {
-			if(!empty($param) && in_array($column, array_keys($default)) && $column != 'amount_id') {
-				$sql[] = ($column === 'email') ? " t2.email = '$param' " : " t1.$column = '$param' ";
-			}
-		}
+        foreach( $params as $column => $param ) {
+            if( $column === 'type' ) {
+                switch ( $params['type'] ) {
+                    case 'pending' :
+                        $sql[] = " t1.confirmed = 0 ";
+                        $sql[] = " t1.explorer_url IS NOT NULL ";
+                        break;
+                    case 'confirmed' :
+                        $sql[] = " t1.confirmed = 1 ";
+                        break;
+                    case 'archived' :
+                        $sql[] = " t1.confirmed = 0 ";
+                        $sql[] = " t1.explorer_url IS NULL ";
+                        break;
+                }
+            }  elseif ( ! empty( $param ) && in_array( $column, array_keys( $default ) ) ) {
+                switch ( $column ) {
+                    case 'amount_id' :
+                        $sql[] = " t1.amount_id RLIKE '^$param' ";
+                        break;
+                    case 'email' :
+                        $sql[] = " t2.email = '$param' ";
+                        break;
+                    default :
+                        $sql[] = " t1.$column = '$param' ";
+                        break;
+                }
+            }
+        }
 
 		if(!empty($sql)) {
 			$query .= ' WHERE ' . implode($sql, 'AND');
-		}
-
-		if(!empty($params['amount_id'])) {
-			$amount_id = $params['amount_id'];
-			if(!empty( $sql)) {
-				$query .= " AND";
-			} else {
-				$query .= " WHERE";
-			}
-			$query .= " amount_id RLIKE '^$amount_id'";
 		}
 
 		$query .= " ORDER BY id DESC LIMIT $offset, $per_page";
@@ -234,39 +254,46 @@ class EzdefiDb
 		return $orders;
 	}
 
-	/**
-	 * Delete exception
-	 *
-	 * @param $amount_id
-	 * @param $currency
-	 * @param $order_id
-	 *
-	 * @return bool
-	 */
-	public function deleteAmountIdException($amount_id, $currency, $order_id)
-	{
-		$table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
+	public function deleteExceptions($wheres = array())
+    {
+        $table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
 
-		if(is_null($order_id) ) {
-			return DB::getInstance()->execute("DELETE FROM $table_name WHERE amount_id = $amount_id AND currency = '$currency' AND order_id IS NULL LIMIT 1");
-		}
+        if( empty( $wheres ) ) {
+            return;
+        }
 
-		return DB::getInstance()->execute("DELETE FROM $table_name WHERE amount_id = $amount_id AND currency = '$currency' AND order_id = $order_id LIMIT 1");
-	}
+        $query = "DELETE FROM $table_name";
 
-	/**
-	 * Delete exception by order id
-	 *
-	 * @param $order_id
-	 *
-	 * @return bool
-	 */
-	public function deleteExceptionByOrderId($order_id)
-	{
-		$table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
+        $conditions = array();
 
-		$query = "DELETE FROM $table_name WHERE order_id = $order_id";
+        foreach( $wheres as $column => $value ) {
+            $type = gettype( $value );
+            switch ($type) {
+                case 'integer' :
+                    $conditions[] = " $column = $value ";
+                    break;
+                case 'NULL' :
+                    $conditions[] = " $column IS NULL ";
+                    break;
+                default :
+                    $conditions[] = " $column = '$value' ";
+                    break;
+            }
+        }
 
-		return DB::getInstance()->execute($query);
-	}
+        if( ! empty( $conditions ) ) {
+            $query .= ' WHERE ' . implode( $conditions, 'AND' );
+        }
+
+        return DB::getInstance()->execute($query);
+    }
+
+    public function deleteException($exception_id)
+    {
+        $table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
+
+        $query = "DELETE FROM $table_name WHERE id = $exception_id";
+
+        return DB::getInstance()->execute($query);
+    }
 }

@@ -1,3 +1,15 @@
+<ul id="ezdefi-transaction-tab" class="nav nav-tabs" role="tablist">
+  <li data-type="pending" {if ! $current_type || $current_type eq 'pending' }class="active"{/if}>
+    <a title="Orders waiting for confirmation" href="{$url}&type=pending">Pending</a>
+  </li>
+  <li data-type="confirmed" {if $current_type eq 'confirmed' }class="active"{/if}>
+    <a title="Confirmed orders" href="{$url}&type=confirmed">Confirmed</a>
+  </li>
+  <li data-type="archived" {if $current_type eq 'archived' }class="active"{/if}>
+    <a title="Unpaid orders" href="{$url}&type=archived">Archived</a>
+  </li>
+</ul>
+
 <div class="panel col-lg-12">
   <div id="">
     <form action="" id="ezdefi-transaction-filter">
