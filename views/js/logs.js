@@ -230,8 +230,8 @@ jQuery(function($) {
   Logs.prototype.renderHtml = function(data) {
     var self = this;
     var rows = data["data"];
+    this.$table.find('tbody tr').not('.spinner-row').remove();
     if (rows.length === 0) {
-      self.$table.find('tbody tr').not('.spinner-row').remove();
       self.$table.append("<tr><td colspan='5'>Not found</td></tr>");
     }
     for (var i = 0; i < rows.length; i++) {
