@@ -108,7 +108,7 @@ class EzdefiDb
 
 		foreach ($data as $column => $value) {
 			if( is_null($value)) {
-				$query .= $comma . $column . " IS NULL";
+				$query .= $comma . $column . " = NULL";
 			} else {
 				$query .= $comma . $column . " = '" . $value . "'";
 			}
@@ -225,6 +225,15 @@ class EzdefiDb
 			'total' => $total
 		);
 	}
+
+	public function getException($exception_id)
+    {
+        $table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
+
+        $query = "SELECT * FROM $table_name WHERE id = $exception_id";
+
+        return DB::getInstance()->executeS($query);
+    }
 
 	/**
 	 * Get Order

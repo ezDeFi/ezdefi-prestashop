@@ -210,11 +210,22 @@ class AdminAjaxEzdefiController extends ModuleAdminController
 
 		$this->helper->setOrderAwaiting($order_id);
 
+        $exception = $this->db->getException($exception_id);
+
+        if(is_null($exception[0]['explorer_url']) || empty($exception[0]['explorer_url'])) {
+            $data_update = array(
+                'confirmed' => 0
+            );
+        } else {
+            $data_update = array(
+                'confirmed' => 0,
+                'order_id' => null,
+            );
+        }
+
 		$this->db->updateExceptions(
             array( 'id' => (int) $exception_id ),
-            array(
-                'confirmed' => 0
-            )
+            $data_update
         );
 
         $this->db->updateExceptions(
