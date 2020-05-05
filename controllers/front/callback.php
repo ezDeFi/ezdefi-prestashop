@@ -144,7 +144,7 @@ class EzdefiCallbackModuleFrontController extends ModuleFrontController
 
         $value = ( $payment_method === 'amount_id' ) ? $payment['originValue'] : ( $payment['value'] / pow( 10, $payment['decimal'] ) );
 
-        $this->db->updateException(
+        $this->db->updateExceptions(
             array(
                 'order_id' => $uoid,
                 'payment_method' => $payment_method,
@@ -154,7 +154,8 @@ class EzdefiCallbackModuleFrontController extends ModuleFrontController
                 'currency' => $payment['token']['symbol'],
                 'status' => strtolower( $status ),
                 'explorer_url' => $payment['explorer']['tx'] . $payment['transactionHash']
-            )
+            ),
+            1
         );
 
         $this->db->deleteExceptions( array(
