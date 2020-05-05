@@ -316,6 +316,9 @@ jQuery(function($) {
           "<a target='_blank' class='explorer-url' href='" + row["explorer_url"] + "'>View Transaction Detail</a>"
         );
         html.find("td.amount-id-column").append(explore);
+      } else {
+        html.find('td.order-column .actions').remove();
+        html.find('td.order-column .select-order').remove();
       }
 
       if (row["order_id"] == null) {
