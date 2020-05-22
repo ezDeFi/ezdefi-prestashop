@@ -81,6 +81,11 @@ class EzdefiApi
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
                 break;
+            case 'put' :
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST , 'PUT');
+                if ($data)
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                break;
             case 'get':
             	if(!empty($data)) {
 		            $query = http_build_query( $data, '', '&' );
@@ -204,6 +209,15 @@ class EzdefiApi
 			'id' => $id
 		));
 	}
+
+	public function updateCallbackUrl($callbackUrl)
+    {
+        return $this->call('website/update_callback', 'put', array(
+            'apiKey' => $this->getApiKey(),
+            'websiteId' => $this->getPublicKey(),
+            'callback' => $callbackUrl
+        ));
+    }
 
 	/**
 	 * Build full API path

@@ -256,6 +256,10 @@ class Ezdefi extends PaymentModule
 			    $this->getValue($configField)
 		    );
 	    }
+
+	    $callbackUrl = $this->context->link->getModuleLink($this->name, 'callback', array(), true);
+
+	    $this->api->updateCallbackUrl($callbackUrl);
     }
 
     public function getContent()
