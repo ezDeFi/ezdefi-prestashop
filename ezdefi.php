@@ -37,7 +37,7 @@ class Ezdefi extends PaymentModule
     {
         $this->name = 'ezdefi';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.0';
+        $this->version = '2.0.0';
         $this->author = 'ezDeFi';
 	    $this->bootstrap = true;
 

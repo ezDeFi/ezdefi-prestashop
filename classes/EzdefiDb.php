@@ -9,6 +9,24 @@ class EzdefiDb
         $this->config = new EzdefiConfig();
     }
 
+    /**
+     * Upgrade database
+     */
+    public function upgradeDatabase()
+    {
+        $amount_ids_table = _DB_PREFIX_ . 'ezdefi_amount_ids';
+
+        DB::getInstance()->execute( "DROP TABLE IF EXISTS $amount_ids_table" );
+        DB::getInstance()->execute( "DROP PROCEDURE IF EXISTS `ps_ezdefi_generate_amount_id`" );
+        DB::getInstance()->execute( "DROP EVENT IF EXISTS `ps_ezdefi_clear_amount_ids_table`" );
+
+        $exception_table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
+
+        DB::getInstance()->execute(
+            "ALTER TABLE $exception_table_name ADD confirmed TinyInt(1) DEFAULT 0, ADD is_show TinyInt(1) DEFAULT 1, ALTER explorer_url SET DEFAULT NULL;"
+        );
+    }
+
 	/**
 	 * Create ezdefi_exceptions table
 	 *
