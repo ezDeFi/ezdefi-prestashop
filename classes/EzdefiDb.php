@@ -23,7 +23,7 @@ class EzdefiDb
         $exception_table_name = _DB_PREFIX_ . 'ezdefi_exceptions';
 
         DB::getInstance()->execute(
-            "ALTER TABLE $exception_table_name ADD confirmed TinyInt(1) DEFAULT 0, ADD is_show TinyInt(1) DEFAULT 1, ALTER explorer_url SET DEFAULT NULL;"
+            "ALTER TABLE $exception_table_name MODIFY confirmed TinyInt(1) DEFAULT 0, ADD is_show TinyInt(1) DEFAULT 1, ALTER explorer_url SET DEFAULT NULL;"
         );
     }
 
