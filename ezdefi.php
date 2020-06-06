@@ -21,11 +21,11 @@ class Ezdefi extends PaymentModule
         'EZDEFI_PUBLIC_KEY'
 	);
 
-    protected $api;
+    public $api;
 
-    protected $config;
+    public $config;
 
-    protected $db;
+    public $db;
 
     protected $helper;
 
